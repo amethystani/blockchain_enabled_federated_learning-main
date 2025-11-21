@@ -103,17 +103,8 @@ class FederatedAveraging:
             metrics=['accuracy']
         )
         
-        # Calculate steps per epoch based on dataset size and batch size
-        # Since dataset repeats infinitely, we need to tell fit() when to stop
-        steps_per_epoch = max(1, dataset_size // BATCH_SIZE)
-        
-        # Train on client's data with multiple epochs
-        history = model.fit(
-            dataset, 
-            epochs=epochs, 
-            steps_per_epoch=steps_per_epoch,
-            verbose=0
-        )
+        # Train on client's data - let Keras handle epochs naturally
+        history = model.fit(dataset, epochs=epochs, verbose=0)
         
         # Get metrics from last epoch
         metrics = {
@@ -242,7 +233,6 @@ def preprocess_dataset(dataset, batch_size=BATCH_SIZE, shuffle_buffer=SHUFFLE_BU
     
     dataset = dataset.map(preprocess_fn, num_parallel_calls=tf.data.AUTOTUNE)
     dataset = dataset.shuffle(shuffle_buffer)
-    dataset = dataset.repeat()  # Repeat indefinitely to avoid running out during epochs
     dataset = dataset.batch(batch_size, drop_remainder=False)
     dataset = dataset.prefetch(tf.data.AUTOTUNE)
     
