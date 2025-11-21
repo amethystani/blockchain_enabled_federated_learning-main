@@ -1,0 +1,21 @@
+# Modern Python 3.12+ Compatible Dependencies for Federated Learning
+# Updated: November 2024
+
+# Core ML Framework (Python 3.13 compatible)
+tensorflow>=2.20.0
+tensorflow-datasets>=4.9.0
+
+# Numerical Computing (use latest with pre-built wheels)
+numpy>=1.26.0
+
+# Visualization
+matplotlib>=3.7.0
+
+# Async utilities
+nest-asyncio>=1.6.0
+
+# Progress bars
+tqdm>=4.65.0
+
+# Additional utilities
+pillow>=10.0.0
