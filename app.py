@@ -94,7 +94,7 @@ def run_quick_validation():
     """Run quick validation."""
     print("\n🚀 Running Quick Validation (5 minutes)...")
     print("="*70)
-    os.system("python spectral_sentinel/experiments/quick_validation.py")
+    os.system("python3 spectral_sentinel/experiments/quick_validation.py")
 
 
 def run_demo():
@@ -102,10 +102,7 @@ def run_demo():
     print("\n🎯 Running Demo Experiment...")
     print("="*70)
     # Quick MNIST experiment with 10 clients
-    cmd = """python -c "
-from spectral_sentinel.experiments.quick_validation import run_quick_experiment
-run_quick_experiment(num_clients=10, num_rounds=5, dataset='mnist')
-""""
+    cmd = 'python3 -c "from spectral_sentinel.experiments.quick_validation import run_quick_experiment; run_quick_experiment(num_clients=10, num_rounds=5, dataset=\'mnist\')"'
     os.system(cmd)
 
 
