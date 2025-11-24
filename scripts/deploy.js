@@ -87,7 +87,10 @@ async function main() {
     console.log(`   python test_blockchain.py\n`);
 
     // If on testnet, print faucet links
-    if (network === "mumbai") {
+    if (network === "amoy") {
+        console.log("💡 Need more POL? Get from faucet:");
+        console.log("   https://faucet.polygon.technology/\n");
+    } else if (network === "mumbai") {
         console.log("💡 Need more MATIC? Get from faucet:");
         console.log("   https://faucet.polygon.technology/\n");
     } else if (network === "sepolia") {
@@ -99,6 +102,7 @@ async function main() {
 
 function getNetworkCurrency(network) {
     switch (network) {
+        case "amoy":
         case "mumbai":
         case "polygon":
             return "MATIC";
@@ -112,6 +116,8 @@ function getNetworkCurrency(network) {
 
 function getExplorerUrl(network, address) {
     switch (network) {
+        case "amoy":
+            return `https://amoy.polygonscan.com/address/${address}`;
         case "mumbai":
             return `https://mumbai.polygonscan.com/address/${address}`;
         case "polygon":

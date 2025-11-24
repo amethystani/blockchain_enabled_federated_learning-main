@@ -54,7 +54,7 @@ class BlockchainConnector:
         w3 = Web3(Web3.HTTPProvider(self.config.rpc_url))
         
         # Add PoA middleware for networks like Polygon
-        if self.config.network in ["mumbai", "polygon"]:
+        if self.config.network in ["amoy", "mumbai", "polygon"]:
             w3.middleware_onion.inject(geth_poa_middleware, layer=0)
         
         if not w3.is_connected():
@@ -409,7 +409,7 @@ class BlockchainConnector:
     
     def _get_currency(self) -> str:
         """Get network currency name."""
-        if self.config.network in ["mumbai", "polygon"]:
+        if self.config.network in ["amoy", "mumbai", "polygon"]:
             return "MATIC"
         return "ETH"
     
@@ -418,6 +418,7 @@ class BlockchainConnector:
     def get_transaction_url(self, tx_hash: str) -> str:
         """Get block explorer URL for transaction."""
         explorers = {
+            "amoy": f"https://amoy.polygonscan.com/tx/{tx_hash}",
             "mumbai": f"https://mumbai.polygonscan.com/tx/{tx_hash}",
             "polygon": f"https://polygonscan.com/tx/{tx_hash}",
             "sepolia": f"https://sepolia.etherscan.io/tx/{tx_hash}",

@@ -97,6 +97,7 @@ class BlockchainConfig:
     def _get_default_rpc(self) -> str:
         """Get default RPC URL for network."""
         rpc_urls = {
+            "amoy": "https://rpc-amoy.polygon.technology/",
             "mumbai": "https://rpc-mumbai.maticvigil.com",
             "polygon": "https://polygon-rpc.com",
             "sepolia": "https://rpc.sepolia.org",
@@ -108,6 +109,7 @@ class BlockchainConfig:
     def _get_chain_id(self) -> int:
         """Get chain ID for network."""
         chain_ids = {
+            "amoy": 80002,
             "mumbai": 80001,
             "polygon": 137,
             "sepolia": 11155111,
