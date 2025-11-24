@@ -1,2 +1,44 @@
+# Python virtual environments
 fed_learning_env/
-fed_learning_env/
+fed_learning_modern_env/
+venv/
+env/
+*.pyc
+__pycache__/
+
+# Blockchain - CRITICAL: Never commit private keys!
+.env
+*.env
+!.env.example
+
+# Node.js / Hardhat
+node_modules/
+package-lock.json
+
+# Hardhat
+cache/
+artifacts/
+typechain/
+typechain-types/
+
+# Blockchain storage
+blockchain_storage/
+*.pkl.gz
+
+# Deployment info (contains addresses)
+deployment.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Results and outputs
+results/
+outputs/
+*.log
