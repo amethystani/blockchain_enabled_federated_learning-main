@@ -20,7 +20,7 @@ from spectral_sentinel.config import Config
 from spectral_sentinel.federated.data_loader import load_federated_data
 from spectral_sentinel.utils.models import get_model
 from spectral_sentinel.federated.client import Client
-from spectral_sentinel.federated.server import Server
+# Server import not needed - using simulations
 from spectral_sentinel.aggregators.baselines import get_aggregator
 
 
