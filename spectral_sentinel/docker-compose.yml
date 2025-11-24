@@ -1,0 +1,112 @@
+# Docker Compose for Spectral Sentinel Multi-Node Simulation
+# Simulates distributed federated learning with multiple containers
+
+version: '3.8'
+
+services:
+  # Master node (server)
+  master:
+    build: .
+    image: spectral_sentinel:latest
+    container_name: spectral_master
+    hostname: master
+    ports:
+      - "6006:6006"  # TensorBoard
+      - "12355:12355"  # Distributed training
+    volumes:
+      - ./data:/workspace/spectral_sentinel/data
+      - ./results:/workspace/spectral_sentinel/results
+      - ./checkpoints:/workspace/spectral_sentinel/checkpoints
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=0
+      - MASTER_ADDR=master
+      - MASTER_PORT=12355
+      - WORLD_SIZE=4
+      - RANK=0
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: python3 spectral_sentinel/experiments/quick_validation.py
+    networks:
+      - spectral_network
+
+  # Worker nodes
+  worker1:
+    image: spectral_sentinel:latest
+    container_name: spectral_worker1
+    hostname: worker1
+    depends_on:
+      - master
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=0
+      - MASTER_ADDR=master
+      - MASTER_PORT=12355
+      - WORLD_SIZE=4
+      - RANK=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - spectral_network
+
+  worker2:
+    image: spectral_sentinel:latest
+    container_name: spectral_worker2
+    hostname: worker2
+    depends_on:
+      - master
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=0
+      - MASTER_ADDR=master
+      - MASTER_PORT=12355
+      - WORLD_SIZE=4
+      - RANK=2
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - spectral_network
+
+  worker3:
+    image: spectral_sentinel:latest
+    container_name: spectral_worker3
+    hostname: worker3
+    depends_on:
+      - master
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=0
+      - MASTER_ADDR=master
+      - MASTER_PORT=12355
+      - WORLD_SIZE=4
+      - RANK=3
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - spectral_network
+
+networks:
+  spectral_network:
+    driver: bridge
+
+# Usage:
+# Build: docker-compose build
+# Start: docker-compose up
+# Stop: docker-compose down
+# Scale workers: docker-compose up --scale worker=8
