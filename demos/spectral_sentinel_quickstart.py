@@ -95,7 +95,7 @@ Trimmed Mean         | ~70%     | ~60%
 
 📖 FULL DOCUMENTATION:
 
-See SPECTRAL_SENTINEL_README.md for:
+See docs/SPECTRAL_SENTINEL_README.md for:
 - Complete API documentation
 - Advanced usage examples
 - Configuration options
@@ -119,7 +119,7 @@ Phase 3: Foundation models & real deployment
 
 ════════════════════════════════════════════════════════════════════════
 
-For support: Check SPECTRAL_SENTINEL_README.md or implementation_plan.md
+For support: Check docs/SPECTRAL_SENTINEL_README.md
 
 Happy Byzantine hunting! 🛡️
 

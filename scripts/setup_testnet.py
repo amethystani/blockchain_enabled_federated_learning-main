@@ -196,7 +196,7 @@ def main():
         if deployment['network'] == config.network:
             update_env_with_contract(deployment['contractAddress'])
             print("\n✅ Ready to run tests!")
-            print("\n🚀 Next step: python test_blockchain.py\n")
+            print("\n🚀 Next step: python tests/test_blockchain.py\n")
             return True
         else:
             print(f"\n⚠️  Deployed on {deployment['network']}, but config is {config.network}")
@@ -268,7 +268,7 @@ def main():
         print("=" * 70)
         print(f"\n📜 Contract: {deployment['contractAddress']}")
         print(f"🔗 Explorer: {deployment['explorerUrl']}")
-        print(f"\n🚀 Next step: python test_blockchain.py\n")
+        print(f"\n🚀 Next step: python tests/test_blockchain.py\n")
         return True
     else:
         print("⚠️  Deployment completed but couldn't load deployment info")

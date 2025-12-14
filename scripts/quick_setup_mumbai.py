@@ -103,7 +103,7 @@ USE_IPFS=false
     print("   2. Check balance: python scripts/check_balance.py")
     print("   3. Install dependencies: npm install")
     print("   4. Deploy contract: python scripts/setup_testnet.py")
-    print("   5. Run test: python test_blockchain.py\n")
+    print("   5. Run test: python tests/test_blockchain.py\n")
     
     return True
 

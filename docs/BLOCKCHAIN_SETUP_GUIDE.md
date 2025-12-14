@@ -96,7 +96,7 @@ CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3  # From deployment o
 ### Step 5: Run Integration Test
 
 ```bash
-python test_blockchain.py
+python tests/test_blockchain.py
 ```
 
 Expected output:
@@ -152,7 +152,7 @@ Visit [Mumbai PolygonScan](https://mumbai.polygonscan.com/) and search for your 
 
 ```bash
 # Update CONTRACT_ADDRESS in .env first, then:
-python test_blockchain.py
+python tests/test_blockchain.py
 ```
 
 ---

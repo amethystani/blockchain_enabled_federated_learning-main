@@ -4,13 +4,13 @@
 
 ### Option 1: Interactive Menu
 ```bash
-python app.py
+python apps/app.py
 ```
 Then select `[1] Quick Validation` from the menu.
 
 ### Option 2: Direct Command
 ```bash
-python app.py --quick
+python apps/app.py --quick
 ```
 
 ### Option 3: Direct Script
@@ -44,16 +44,16 @@ The quick validation will:
 ### Using app.py (Recommended)
 ```bash
 # Interactive menu
-python app.py
+python apps/app.py
 
 # Quick validation
-python app.py --quick
+python apps/app.py --quick
 
 # Complete benchmark
-python app.py --benchmark
+python apps/app.py --benchmark
 
 # Run everything
-python app.py --all
+python apps/app.py --all
 ```
 
 ### Using Scripts Directly
@@ -82,13 +82,13 @@ python spectral_sentinel/experiments/limitations_analysis.py
 
 ### Option 1: Using app.py
 ```bash
-python app.py --all
+python apps/app.py --all
 ```
 
 ### Option 2: Using bash script
 ```bash
-chmod +x run_all.sh
-./run_all.sh
+chmod +x scripts/shell/run_all.sh
+bash scripts/shell/run_all.sh
 ```
 
 ---
@@ -126,7 +126,7 @@ python -c "from spectral_sentinel.utils.multi_gpu import print_gpu_info; print_g
 python -c "from spectral_sentinel.experiments.quick_validation import run_quick_experiment; run_quick_experiment(num_clients=10, num_rounds=5)"
 
 # Generate report
-python app.py
+python apps/app.py
 # Then select [21] Generate Report
 ```
 
@@ -163,7 +163,7 @@ pip install -r requirements_phase3.txt
 ```bash
 # Run on CPU (slower but works)
 export CUDA_VISIBLE_DEVICES=""
-python app.py --quick
+python apps/app.py --quick
 ```
 
 ---
@@ -173,17 +173,17 @@ python app.py --quick
 1. **Check Results**: Look in `./results/` directory
 2. **Review Plots**: PNG files show accuracy curves
 3. **Read CSV**: Detailed metrics in CSV files
-4. **Compare**: Match results against WHATWEHAVETOIMPLEMENT.MD
+4. **Compare**: Match results against `WHATWEHAVETOIMPLEMENT.MD`
 
 ---
 
 ## Full Documentation
 
 - **SPECTRAL_SENTINEL_COMPLETE.md**: Complete feature list
+- **SPECTRAL_SENTINEL_README.md**: Full usage + technical overview
 - **PHASE3_GUIDE.md**: Scaled experiments guide
-- **walkthrough.md**: Implementation details
 - **WHATWEHAVETOIMPLEMENT.MD**: Original requirements
 
 ---
 
-**TL;DR**: Just run `python app.py` and select what you want! ✨
+**TL;DR**: Just run `python apps/app.py` and select what you want! ✨

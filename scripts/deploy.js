@@ -84,7 +84,7 @@ async function main() {
     console.log(`   python scripts/setup_testnet.py\n`);
 
     console.log("4. Run blockchain integration test:");
-    console.log(`   python test_blockchain.py\n`);
+    console.log(`   python tests/test_blockchain.py\n`);
 
     // If on testnet, print faucet links
     if (network === "amoy") {

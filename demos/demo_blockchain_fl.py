@@ -8,7 +8,9 @@ This is a minimal example showing the core workflow.
 
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent))
+# Add repo root to path (so `spectral_sentinel` is importable even from `demos/`)
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_REPO_ROOT))
 
 import torch
 import torch.nn as nn

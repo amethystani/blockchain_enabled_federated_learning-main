@@ -1,6 +1,11 @@
 import torch
 import sys
 import os
+from pathlib import Path
+
+# Add repo root to path (so imports work even when run from `tools/`)
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_REPO_ROOT))
 
 print(f"PID: {os.getpid()}")
 print("Imported torch")

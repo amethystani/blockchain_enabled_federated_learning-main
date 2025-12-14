@@ -6,10 +6,10 @@ Interactive CLI to run all experiments and features.
 Run this to access the complete Spectral Sentinel system.
 
 Usage:
-    python app.py                    # Interactive menu
-    python app.py --quick            # Quick validation
-    python app.py --benchmark        # Full benchmark
-    python app.py --all              # Run everything
+    python apps/app.py                    # Interactive menu
+    python apps/app.py --quick            # Quick validation
+    python apps/app.py --benchmark        # Full benchmark
+    python apps/app.py --all              # Run everything
 """
 
 import sys
@@ -17,8 +17,9 @@ import os
 import argparse
 from pathlib import Path
 
-# Add project to path
-sys.path.insert(0, str(Path(__file__).parent))
+# Add repo root to path (so `spectral_sentinel` is importable even from `apps/`)
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_REPO_ROOT))
 
 def print_banner():
     """Print welcome banner."""
@@ -261,8 +262,8 @@ def generate_report():
     3. Compare with paper claims
     
     For detailed analysis, see:
-    • SPECTRAL_SENTINEL_COMPLETE.md
-    • walkthrough.md
+    • docs/SPECTRAL_SENTINEL_COMPLETE.md
+    • docs/SPECTRAL_SENTINEL_README.md
     """
     
     print(report)

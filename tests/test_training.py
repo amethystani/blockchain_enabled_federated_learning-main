@@ -1,10 +1,16 @@
+import sys
+import os
+from pathlib import Path
+
+# Add repo root to path (so imports work even when run from `tests/`)
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_REPO_ROOT))
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from spectral_sentinel.utils.models import SimpleCNN
 from spectral_sentinel.federated.data_loader import load_federated_data, create_data_loader
-import sys
-import os
 
 print(f"PID: {os.getpid()}")
 

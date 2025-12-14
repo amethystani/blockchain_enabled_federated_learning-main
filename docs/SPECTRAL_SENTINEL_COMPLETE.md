@@ -226,7 +226,6 @@ This implementation validates all claims from WHATWEHAVETOIMPLEMENT.MD:
 - **`PHASE2_VALIDATION_GUIDE.md`**: Validation suite guide
 - **`PHASE3_GUIDE.md`**: Scaled experiments guide
 - **`WHATWEHAVETOIMPLEMENT.MD`**: Original vision (100% complete)
-- **`walkthrough.md`**: Complete implementation walkthrough
 
 ---
 

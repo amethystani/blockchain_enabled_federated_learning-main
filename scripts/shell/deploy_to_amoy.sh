@@ -21,5 +21,5 @@ echo "✅ Deployment complete!"
 echo ""
 echo "📝 Next steps:"
 echo "1. Update .env file with the CONTRACT_ADDRESS from deployment.json"
-echo "2. Run: python test_amoy_testnet.py"
+echo "2. Run: python tests/test_amoy_testnet.py"
 
