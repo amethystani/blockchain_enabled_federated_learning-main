@@ -1,0 +1,567 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "clientAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "clientId",
+          "type": "uint256"
+        }
+      ],
+      "name": "ClientRegistered",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "roundNumber",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "clientId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "clientAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "modelHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "ModelUpdateSubmitted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "roundNumber",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "aggregatedModelHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "numSubmissions",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "RoundFinalized",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "roundNumber",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "RoundStarted",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "addressToClientId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "clientIdToAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "currentRound",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_aggregatedModelHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "finalizeRound",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_clientAddress",
+          "type": "address"
+        }
+      ],
+      "name": "getClientId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roundNumber",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_clientId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getModelUpdate",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "clientAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "clientId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "modelHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "roundNumber",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "verified",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct FederatedLearning.ModelUpdate",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roundNumber",
+          "type": "uint256"
+        }
+      ],
+      "name": "getRoundInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "roundNumber",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "startTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "endTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "aggregatedModelHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "numSubmissions",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "finalized",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct FederatedLearning.Round",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roundNumber",
+          "type": "uint256"
+        }
+      ],
+      "name": "getRoundSubmissions",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roundNumber",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_clientId",
+          "type": "uint256"
+        }
+      ],
+      "name": "hasClientSubmitted",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "hasSubmitted",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "isRegisteredClient",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_clientAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_clientId",
+          "type": "uint256"
+        }
+      ],
+      "name": "registerClient",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "_clientAddresses",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_clientIds",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "registerClientsBatch",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "roundUpdates",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "clientAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "clientId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "modelHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "roundNumber",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "verified",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "rounds",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "roundNumber",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "startTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "endTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "aggregatedModelHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "numSubmissions",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "finalized",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "startRound",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_modelHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "submitModelUpdate",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalClients",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080604052348015600e575f80fd5b505f80546001600160a01b03191633178155600155611297806100305f395ff3fe608060405234801561000f575f80fd5b506004361061011c575f3560e01c806362ae1e94116100a95780638d8a55e71161006e5780638d8a55e7146104395780638da5cb5b14610458578063d2ac8bea1461046a578063d557521c146104fd578063f89c60fb1461051f575f80fd5b806362ae1e94146103365780637bc4fd771461034957806388c3ffb01461035c5780638a19c8bc146103bc5780638c65c81f146103c5575f80fd5b80632543b3a7116100ef5780632543b3a7146102625780633463fd661461029f57806338495cdf146102c15780634931f50c1461030157806355e3f0861461032e575f80fd5b80630475304e146101205780630e08b0e3146101355780631051890014610151578063202f562e1461024f575b5f80fd5b61013361012e36600461109a565b610532565b005b61013e60025481565b6040519081526020015b60405180910390f35b6101fd61015f3660046110b1565b6040805160c0810182525f80825260208201819052918101829052606081018290526080810182905260a0810191909152505f91825260066020908152604080842092845291815291819020815160c08101835281546001600160a01b0316815260018201549381019390935260028101549183019190915260038101546060830152600481015460808301526005015460ff16151560a082015290565b604051610148919081516001600160a01b031681526020808301519082015260408083015190820152606080830151908201526080808301519082015260a09182015115159181019190915260c00190565b61013361025d3660046110ec565b610815565b61028f6102703660046110b1565b600860209081525f928352604080842090915290825290205460ff1681565b6040519015158152602001610148565b61028f6102ad366004611114565b60056020525f908152604090205460ff1681565b6102e96102cf36600461109a565b60036020525f90815260409020546001600160a01b031681565b6040516001600160a01b039091168152602001610148565b61028f61030f3660046110b1565b5f91825260086020908152604080842092845291905290205460ff1690565b6101336109ae565b61013e610344366004611114565b610b06565b61013361035736600461117c565b610b80565b61036f61036a36600461109a565b610e5a565b60405161014891905f60c082019050825182526020830151602083015260408301516040830152606083015160608301526080830151608083015260a0830151151560a083015292915050565b61013e60015481565b61040a6103d336600461109a565b60076020525f9081526040902080546001820154600283015460038401546004850154600590950154939492939192909160ff1686565b6040805196875260208701959095529385019290925260608401526080830152151560a082015260c001610148565b61013e610447366004611114565b60046020525f908152604090205481565b5f546102e9906001600160a01b031681565b6104c46104783660046110b1565b600660209081525f92835260408084209091529082529020805460018201546002830154600384015460048501546005909501546001600160a01b039094169492939192909160ff1686565b604080516001600160a01b03909716875260208701959095529385019290925260608401526080830152151560a082015260c001610148565b61013e61050b36600461109a565b5f9081526007602052604090206004015490565b61013361052d36600461109a565b610eef565b335f9081526005602052604090205460ff1661058d5760405162461bcd60e51b815260206004820152601560248201527410db1a595b9d081b9bdd081c9959da5cdd195c9959605a1b60448201526064015b60405180910390fd5b600180545f818152600760205260409020909101546105e25760405162461bcd60e51b8152602060048201526011602482015270149bdd5b99081b9bdd081cdd185c9d1959607a1b6044820152606401610584565b5f8181526007602052604090206005015460ff161561063d5760405162461bcd60e51b8152602060048201526017602482015276149bdd5b9908185b1c9958591e48199a5b985b1a5e9959604a1b6044820152606401610584565b335f908152600460209081526040808320546001548452600883528184208185529092529091205460ff16156106b55760405162461bcd60e51b815260206004820181905260248201527f416c7265616479207375626d697474656420666f72207468697320726f756e646044820152606401610584565b826106f75760405162461bcd60e51b8152602060048201526012602482015271092dcecc2d8d2c840dadec8cad840d0c2e6d60731b6044820152606401610584565b6040805160c08101825233815260208082018481528284018781524260608501908152600180546080870181815260a088018381525f928352600688528983208b84528852898320895181546001600160a01b03919091166001600160a01b03199091161781559651878501559451600287015592516003860155915160048086019190915592516005909401805494151560ff19958616179055805482526008855286822088835285528682208054909416811790935591548252600790925292832001805491926107c9836111e8565b9091555050600154604080518681524260208201523392859290917f668ee3558eff01ce8a714b76bba8625f482d9afa8a7a7bec7401c6b4f52986e0910160405180910390a450505050565b5f546001600160a01b0316331461083e5760405162461bcd60e51b81526004016105849061120c565b6001600160a01b0382165f9081526005602052604090205460ff16156108a65760405162461bcd60e51b815260206004820152601960248201527f436c69656e7420616c72656164792072656769737465726564000000000000006044820152606401610584565b5f818152600360205260409020546001600160a01b03161561090a5760405162461bcd60e51b815260206004820152601760248201527f436c69656e7420494420616c72656164792074616b656e0000000000000000006044820152606401610584565b5f81815260036020908152604080832080546001600160a01b0319166001600160a01b03871690811790915583526004825280832084905560059091528120805460ff191660011790556002805491610962836111e8565b9190505550816001600160a01b03167f3c955a3187c7e83dcbb8616841ccd3d715ab7a5e6928b8195535cced27e6f0b4826040516109a291815260200190565b60405180910390a25050565b5f546001600160a01b031633146109d75760405162461bcd60e51b81526004016105849061120c565b60015415610a42576001545f9081526007602052604090206005015460ff16610a425760405162461bcd60e51b815260206004820152601c60248201527f50726576696f757320726f756e64206e6f742066696e616c697a6564000000006044820152606401610584565b60018054905f610a51836111e8565b90915550506040805160c081018252600180548083524260208085018281525f868801818152606088018281526080890183815260a08a0184815297845260078652928a9020985189559251888801555160028801559051600387015551600486015591516005909401805460ff19169415159490941790935590548351908152908101919091527f278844837bcf8364a705384bf3a2812901f54155bae86dea81dd52aa5b9ec0e3910160405180910390a1565b6001600160a01b0381165f9081526005602052604081205460ff16610b655760405162461bcd60e51b815260206004820152601560248201527410db1a595b9d081b9bdd081c9959da5cdd195c9959605a1b6044820152606401610584565b506001600160a01b03165f9081526004602052604090205490565b5f546001600160a01b03163314610ba95760405162461bcd60e51b81526004016105849061120c565b828114610bf05760405162461bcd60e51b8152602060048201526015602482015274082e4e4c2f240d8cadccee8d040dad2e6dac2e8c6d605b1b6044820152606401610584565b5f5b83811015610e535760055f868684818110610c0f57610c0f61124d565b9050602002016020810190610c249190611114565b6001600160a01b0316815260208101919091526040015f205460ff16158015610c8257505f600381858585818110610c5e57610c5e61124d565b602090810292909201358352508101919091526040015f20546001600160a01b0316145b15610e4b57848482818110610c9957610c9961124d565b9050602002016020810190610cae9190611114565b60035f858585818110610cc357610cc361124d565b9050602002013581526020019081526020015f205f6101000a8154816001600160a01b0302191690836001600160a01b03160217905550828282818110610d0c57610d0c61124d565b9050602002013560045f878785818110610d2857610d2861124d565b9050602002016020810190610d3d9190611114565b6001600160a01b03166001600160a01b031681526020019081526020015f2081905550600160055f878785818110610d7757610d7761124d565b9050602002016020810190610d8c9190611114565b6001600160a01b0316815260208101919091526040015f908120805460ff1916921515929092179091556002805491610dc4836111e8565b9190505550848482818110610ddb57610ddb61124d565b9050602002016020810190610df09190611114565b6001600160a01b03167f3c955a3187c7e83dcbb8616841ccd3d715ab7a5e6928b8195535cced27e6f0b4848484818110610e2c57610e2c61124d565b90506020020135604051610e4291815260200190565b60405180910390a25b600101610bf2565b5050505050565b610e926040518060c001604052805f81526020015f81526020015f81526020015f80191681526020015f81526020015f151581525090565b505f90815260076020908152604091829020825160c08101845281548152600182015492810192909252600281015492820192909252600382015460608201526004820154608082015260059091015460ff16151560a082015290565b5f546001600160a01b03163314610f185760405162461bcd60e51b81526004016105849061120c565b600180545f81815260076020526040902090910154610f6d5760405162461bcd60e51b8152602060048201526011602482015270149bdd5b99081b9bdd081cdd185c9d1959607a1b6044820152606401610584565b5f8181526007602052604090206005015460ff1615610fc85760405162461bcd60e51b8152602060048201526017602482015276149bdd5b9908185b1c9958591e48199a5b985b1a5e9959604a1b6044820152606401610584565b816110155760405162461bcd60e51b815260206004820152601760248201527f496e76616c6964206167677265676174656420686173680000000000000000006044820152606401610584565b600180545f9081526007602090815260408083206003018690558354835280832042600290910181905584548452818420600501805460ff19168617905593548084529281902060040154815187815292830152810192909252907fe0ae9e46106eac584aef5321e0c8ad9ef87966e41dbc70fd8c7772df48fad12f906060016109a2565b5f602082840312156110aa575f80fd5b5035919050565b5f80604083850312156110c2575f80fd5b50508035926020909101359150565b80356001600160a01b03811681146110e7575f80fd5b919050565b5f80604083850312156110fd575f80fd5b611106836110d1565b946020939093013593505050565b5f60208284031215611124575f80fd5b61112d826110d1565b9392505050565b5f8083601f840112611144575f80fd5b50813567ffffffffffffffff81111561115b575f80fd5b6020830191508360208260051b8501011115611175575f80fd5b9250929050565b5f805f806040858703121561118f575f80fd5b843567ffffffffffffffff8111156111a5575f80fd5b6111b187828801611134565b909550935050602085013567ffffffffffffffff8111156111d0575f80fd5b6111dc87828801611134565b95989497509550505050565b5f6001820161120557634e487b7160e01b5f52601160045260245ffd5b5060010190565b60208082526021908201527f4f6e6c79206f776e65722063616e2063616c6c20746869732066756e6374696f6040820152603760f91b606082015260800190565b634e487b7160e01b5f52603260045260245ffdfea2646970667358221220d3f565aa03671dc535ffb4fb8e6da90f61307fc0bc9657c99beff3afd953527164736f6c634300081a0033"
+}

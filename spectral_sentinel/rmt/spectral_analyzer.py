@@ -292,7 +292,14 @@ class SpectralAnalyzer:
         
         # Compute eigenvectors corresponding to anomalous eigenvalues
         n, d = gradient_matrix.shape
-        cov_matrix = (gradient_matrix.T @ gradient_matrix) / n
+        # Subsample columns if d is too large to avoid memory issues (O(d²) covariance)
+        _MAX_DIM = 2048
+        if d > _MAX_DIM:
+            col_idx = np.random.choice(d, _MAX_DIM, replace=False)
+            gm_sub = gradient_matrix[:, col_idx]
+        else:
+            gm_sub = gradient_matrix
+        cov_matrix = (gm_sub.T @ gm_sub) / n
         eigenvalues_full, eigenvectors = np.linalg.eigh(cov_matrix)
         
         # Sort descending
@@ -303,8 +310,8 @@ class SpectralAnalyzer:
         anomalous_indices = np.where(anomalous_mask)[0]
         anomalous_eigenvectors = eigenvectors[:, anomalous_indices]
         
-        # Project each client's gradient onto anomalous subspace
-        projections = np.abs(gradient_matrix @ anomalous_eigenvectors)
+        # Project each client's gradient onto anomalous subspace (use same subsampled view)
+        projections = np.abs(gm_sub @ anomalous_eigenvectors)
         projection_norms = np.linalg.norm(projections, axis=1)
         
         # Flag clients with large projections (top 25% or above threshold)
