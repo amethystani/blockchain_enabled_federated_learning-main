@@ -26,11 +26,10 @@
 \title{Spectral Sentinel: A Self-Stabilizing Byzantine-Robust\\
 Federated Learning System via Sketched Random Matrix Theory}
 
-\author{Animesh Mishra\inst{1} \and Aryaman Srivastava\inst{1}}
-\authorrunning{A. Mishra and A. Srivastava}
-\institute{Department of Computer Science \& Engineering,
-Shiv Nadar University, Greater Noida, India\\
-\email{\{am847,as533\}@snu.edu.in}}
+%% Anonymized for double-blind review (SSS 2026)
+\author{Anonymous Author(s)}
+\authorrunning{Anon.}
+\institute{Institution withheld for review}
 
 \maketitle
 
@@ -476,18 +475,17 @@ Figure~\ref{fig:convergence} shows convergence curves over training rounds for d
     xlabel={Training Round},
     ylabel={Test Accuracy (\%)},
     xmin=0, xmax=200,
-    ymin=45, ymax=88,
+    ymin=45, ymax=90,
     grid=major,
     grid style={dashed, gray!20},
-    width=0.48\textwidth,
-    height=0.35\textwidth,
+    width=0.88\textwidth,
+    height=0.48\textwidth,
     legend pos=south east,
-    legend style={font=\footnotesize, draw=black!50, fill=white, fill opacity=0.9, text opacity=1},
-    tick label style={font=\footnotesize},
-    xlabel style={font=\small},
-    ylabel style={font=\small},
-    every axis plot/.append style={line width=1.2pt},
-    cycle list name=exotic,
+    legend style={font=\scriptsize, draw=black!50, fill=white, fill opacity=0.95, text opacity=1, at={(0.99,0.06)}, anchor=south east},
+    tick label style={font=\small},
+    xlabel style={font=\normalsize},
+    ylabel style={font=\normalsize},
+    every axis plot/.append style={line width=1.4pt},
     minor tick num=1
 ]
 % Clean baseline (no attacks) - reference line
@@ -533,16 +531,16 @@ Figure~\ref{fig:phase_transition} illustrates the sharp phase transition at $\si
     xlabel={Heterogeneity-Byzantine Product ($\sigma^2 f^2$)},
     ylabel={Detection Rate (\%)},
     xmin=0, xmax=0.36,
-    ymin=0, ymax=105,
+    ymin=0, ymax=115,
     grid=major,
     grid style={dashed, gray!20},
-    width=0.48\textwidth,
-    height=0.35\textwidth,
-    legend pos=north east,
-    legend style={font=\scriptsize, draw=black!50, fill=white, fill opacity=0.9, text opacity=1, cells={anchor=west}},
-    tick label style={font=\footnotesize},
-    xlabel style={font=\small},
-    ylabel style={font=\small},
+    width=0.88\textwidth,
+    height=0.48\textwidth,
+    legend pos=north west,
+    legend style={font=\small, draw=black!50, fill=white, fill opacity=0.95, text opacity=1, cells={anchor=west}, at={(0.01,0.99)}, anchor=north west},
+    tick label style={font=\small},
+    xlabel style={font=\normalsize},
+    ylabel style={font=\normalsize},
     minor tick num=1
 ]
 % Shaded regions for visual clarity
@@ -590,12 +588,12 @@ Figure~\ref{fig:phase_transition} illustrates the sharp phase transition at $\si
 };
 
 % Phase transition line
-\draw[line width=2.5pt, red!60!black, densely dashed] (axis cs:0.25,0) -- (axis cs:0.25,105);
-\node[red!60!black, font=\footnotesize\bfseries, fill=white, inner sep=2pt, draw=red!60!black, rounded corners] at (axis cs:0.25,100) {Critical Point: 0.25};
+\draw[line width=2.5pt, red!60!black, densely dashed] (axis cs:0.25,0) -- (axis cs:0.25,115);
+\node[red!60!black, font=\small\bfseries, fill=white, inner sep=2pt, draw=red!60!black, rounded corners] at (axis cs:0.25,108) {$\sigma^2 f^2{=}0.25$};
 
 % Region labels
-\node[blue!70!black, font=\scriptsize\bfseries, fill=white, inner sep=2pt, rounded corners, opacity=0.9] at (axis cs:0.12,10) {Detectable};
-\node[orange!80!black, font=\scriptsize\bfseries, fill=white, inner sep=2pt, rounded corners, opacity=0.9] at (axis cs:0.30,10) {Undetectable};
+\node[blue!70!black, font=\small\bfseries, fill=white, inner sep=2pt, rounded corners, opacity=0.9] at (axis cs:0.10,20) {Detectable};
+\node[orange!80!black, font=\small\bfseries, fill=white, inner sep=2pt, rounded corners, opacity=0.9] at (axis cs:0.31,20) {Undetectable};
 
 \legend{High Detection ($<$0.245), Transition (0.245--0.254), Low Detection ($>$0.254)}
 \end{axis}
@@ -623,13 +621,13 @@ Figure~\ref{fig:memory_scaling} shows memory usage with and without sketching.
     grid=both,
     grid style={line width=0.1pt, draw=gray!20},
     major grid style={line width=0.3pt, draw=gray!40},
-    width=0.48\textwidth,
-    height=0.35\textwidth,
+    width=0.88\textwidth,
+    height=0.5\textwidth,
     legend pos=north west,
-    legend style={font=\scriptsize, draw=black!50, fill=white, fill opacity=0.9, text opacity=1},
-    tick label style={font=\footnotesize},
-    xlabel style={font=\small},
-    ylabel style={font=\small},
+    legend style={font=\small, draw=black!50, fill=white, fill opacity=0.95, text opacity=1, at={(0.02,0.98)}, anchor=north west},
+    tick label style={font=\small},
+    xlabel style={font=\normalsize},
+    ylabel style={font=\normalsize},
     xmin=5e4, xmax=2e9,
     ymin=1e-4, ymax=1e4,
     xtick={1e5,1e6,1e7,1e8,1e9},
@@ -833,27 +831,27 @@ Figure~\ref{fig:sketch_size} shows accuracy versus memory tradeoff for different
     xlabel={Sketch Size ($k$)},
     ylabel={Test Accuracy (\%)},
     xmin=64, xmax=2048,
-    ymin=80, ymax=91,
+    ymin=80, ymax=91.5,
     grid=major,
     grid style={dashed, gray!20},
-    width=0.48\textwidth,
-    height=0.35\textwidth,
-    legend pos=south east,
-    legend style={font=\scriptsize, draw=black!50, fill=white, fill opacity=0.9, text opacity=1},
-    tick label style={font=\footnotesize},
-    xlabel style={font=\small},
-    ylabel style={font=\small},
+    width=0.88\textwidth,
+    height=0.48\textwidth,
+    legend pos=south west,
+    legend style={font=\small, draw=black!50, fill=white, fill opacity=0.95, text opacity=1, at={(0.02,0.06)}, anchor=south west},
+    tick label style={font=\small},
+    xlabel style={font=\normalsize},
+    ylabel style={font=\normalsize},
     xtick={64,128,256,512,1024,2048},
     ytick={80,82,84,86,88,90},
     yticklabel style={/pgf/number format/fixed},
     minor tick num=1
 ]
 % Shaded region for practical range
-\fill[green!5, opacity=0.5] (axis cs:128,80) rectangle (axis cs:512,91);
+\fill[green!5, opacity=0.5] (axis cs:128,80) rectangle (axis cs:512,91.5);
 
 % Saturation line
 \draw[black!40, densely dotted, line width=1pt] (axis cs:64,89.5) -- (axis cs:2048,89.5);
-\node[black!50, font=\tiny, fill=white, inner sep=1pt] at (axis cs:1200,89.5) {Saturation};
+\node[black!50, font=\small, fill=white, inner sep=1pt] at (axis cs:1400,89.8) {Saturation};
 
 % CNN/ResNet models (lower rank) - faster saturation
 \addplot[color=blue!70!black, line width=2pt, mark=square*, mark size=2.5pt, mark options={fill=blue!70!black}] coordinates {
@@ -885,12 +883,12 @@ Figure~\ref{fig:sketch_size} shows accuracy versus memory tradeoff for different
 };
 
 % Recommended operating point
-\draw[thick, green!60!black, densely dashed] (axis cs:256,80) -- (axis cs:256,91);
-\node[green!60!black, font=\scriptsize\bfseries, fill=white, inner sep=2pt, anchor=south, rotate=90] at (axis cs:256,85) {Recommended: $k$=256};
+\draw[thick, green!60!black, densely dashed] (axis cs:256,80) -- (axis cs:256,91.5);
+\node[green!60!black, font=\scriptsize\bfseries, fill=white, inner sep=2pt, anchor=north, above] at (axis cs:256,91.4) {$k$=256};
 
 % Sweet spot indicator
-\draw[thick, orange!70!black, densely dashed] (axis cs:512,80) -- (axis cs:512,91);
-\node[orange!70!black, font=\scriptsize\bfseries, fill=white, inner sep=2pt, anchor=south, rotate=90] at (axis cs:512,85) {High-rank: $k$=512};
+\draw[thick, orange!70!black, densely dashed] (axis cs:512,80) -- (axis cs:512,91.5);
+\node[orange!70!black, font=\scriptsize\bfseries, fill=white, inner sep=2pt, anchor=north, above] at (axis cs:512,91.4) {$k$=512};
 
 \legend{CNN/ResNet (rank$\approx$128), Transformer (rank$\approx$256)}
 \end{axis}
