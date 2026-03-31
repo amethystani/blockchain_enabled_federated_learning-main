@@ -199,13 +199,17 @@ def exp2_phase_transition():
         else:
             G = G_honest
 
-        # Spectral detection
-        G_std = (G - G.mean(0)) / (G.std(0) + 1e-8)
-        cov   = (G_std.T @ G_std) / n_clients
-        eigvals = np.linalg.eigvalsh(cov)
-        sigma_hat = max(1e-6, np.median(eigvals))
-        lam_plus  = sigma_hat * (1 + math.sqrt(n_clients / d))**2
-        outliers  = eigvals[eigvals > lam_plus * 1.05]
+        # Spectral detection via n×n Gram matrix (correct λ⁺ computation).
+        # The d×d covariance G_std.T@G_std/n has rank≤n_clients, so its median
+        # eigenvalue is 0 (rank-deficient), making λ⁺=0 and detection blind.
+        # The n×n Gram G_std@G_std.T/d has rank n, all eigenvalues positive.
+        n_rows  = G.shape[0]
+        G_std   = (G - G.mean(0)) / (G.std(0) + 1e-8)
+        gram    = (G_std @ G_std.T) / d          # n×n, all eigenvalues positive
+        gram_ev = np.linalg.eigvalsh(gram)       # n eigenvalues ≈ σ²_entry ≈ 1
+        sigma_hat = max(1e-6, float(np.mean(gram_ev)))
+        lam_plus  = sigma_hat * (1 + math.sqrt(n_rows / d))**2
+        outliers  = gram_ev[gram_ev > lam_plus * 1.05]
         detected  = len(outliers) > 0
         exp_detection.append(1.0 if detected else 0.0)
 
@@ -469,22 +473,29 @@ def exp5_spectral_fingerprints():
         k      = min(128, d_)
         idx    = np.random.choice(d_, k, replace=False)
         G_sub  = G_std[:, idx]
-        cov    = (G_sub.T @ G_sub) / n_
-        eigvals = np.sort(np.linalg.eigvalsh(cov))
 
-        sigma_hat = max(1e-6, np.median(eigvals))
+        # n×n Gram matrix: all n_ eigenvalues are positive (no rank-deficiency).
+        # The k×k covariance has rank ≤ n_, leaving (k-n_) zero eigenvalues whose
+        # median is 0 → λ⁺=0 (bug). The Gram gives σ²_entry ≈ 1 for standardized G.
+        gram   = (G_sub @ G_sub.T) / k   # n_×n_ matrix
+        eigvals_gram = np.sort(np.linalg.eigvalsh(gram))
+
+        sigma_hat = max(1e-6, float(np.mean(eigvals_gram)))
         gamma     = n_ / k
         lam_plus  = sigma_hat * (1 + math.sqrt(gamma))**2
 
-        outliers = eigvals[eigvals > lam_plus * 1.05]
+        # Outliers in the Gram spectrum beyond λ⁺ indicate Byzantine spike eigenvalues
+        outliers = eigvals_gram[eigvals_gram > lam_plus * 1.05]
+
+        # Per-client anomaly score: mean squared gradient in subspace
         scores   = np.array([np.mean(G_sub[i]**2) for i in range(n_)])
         detect_threshold = np.median(scores) + 2.0 * np.std(scores)
         detected = (scores > detect_threshold).sum()
 
-        print(f"  [{label}]  λ_max={eigvals.max():.4f}  "
+        print(f"  [{label}]  λ_max_gram={eigvals_gram.max():.4f}  "
               f"λ+={lam_plus:.4f}  outliers={len(outliers)}  "
               f"clients_detected={detected}/{n_byz}")
-        return eigvals, lam_plus, scores
+        return eigvals_gram, lam_plus, scores
 
     attacks  = ['none', 'minmax', 'gaussian', 'labelflip', 'zero', 'alie']
     labels   = ['No Attack', 'MinMax', 'Gaussian', 'LabelFlip', 'Zero', 'ALIE']

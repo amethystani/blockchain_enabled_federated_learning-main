@@ -161,31 +161,32 @@ class SpectralAnalyzer:
         
         return eigenvalues
     
-    def _fit_mp_law(self, 
+    def _fit_mp_law(self,
                     eigenvalues: np.ndarray,
                     n_samples: int,
                     n_features: int) -> MarchenkoPasturLaw:
         """
         Fit Marchenko-Pastur law to observed eigenvalues.
-        
-        Args:
-            eigenvalues: Observed eigenvalues
-            n_samples: Number of clients
-            n_features: Number of parameters
-            
-        Returns:
-            Fitted MP law
+
+        The key insight: eigenvalues from _compute_eigenvalues are already in the
+        correct scale (singular_values²/n for the SVD path, or direct eigvalsh).
+        The MP support for these eigenvalues is:
+            λ_± = mean_λ × (1 ± √(n/d))²
+        which corresponds to MarchenkoPasturLaw(gamma=n/d, sigma_sq=mean_lambda).
+
+        This is the correct formula for detecting outlier eigenvalues above λ_+.
+        The previous formula sigma_sq = mean_lambda/(1+d/n) ≈ 0 was wrong,
+        causing lambda_plus ≈ 0 and false Byzantine detection on every round.
         """
-        aspect_ratio = n_samples / n_features
-        
-        # Estimate variance from eigenvalues
-        # Remove potential outliers for robust estimation
+        aspect_ratio = n_samples / n_features   # γ = n/d
+
+        # Use clean eigenvalues for robust mean estimation
         clean_eigenvalues = self._robust_eigenvalue_filter(eigenvalues)
-        
         mean_lambda = np.mean(clean_eigenvalues)
-        sigma_sq = mean_lambda / (1 + 1/aspect_ratio)
-        
-        return MarchenkoPasturLaw(aspect_ratio, sigma_sq)
+
+        # MP support: λ_± = mean_lambda × (1 ± √γ)²
+        # This is achieved by MarchenkoPasturLaw(gamma, sigma_sq=mean_lambda)
+        return MarchenkoPasturLaw(aspect_ratio, mean_lambda)
     
     def _robust_eigenvalue_filter(self, eigenvalues: np.ndarray,
                                   quantile: float = 0.95) -> np.ndarray:
@@ -313,14 +314,25 @@ class SpectralAnalyzer:
         # Project each client's gradient onto anomalous subspace (use same subsampled view)
         projections = np.abs(gm_sub @ anomalous_eigenvectors)
         projection_norms = np.linalg.norm(projections, axis=1)
-        
-        # Flag clients with large projections (top 25% or above threshold)
-        threshold = np.percentile(projection_norms, 75)
+
+        # Adaptive threshold using Median Absolute Deviation (MAD) — robust to outliers.
+        # Flags clients whose projection is significantly above the honest population.
+        median_proj = np.median(projection_norms)
+        mad = np.median(np.abs(projection_norms - median_proj))
+        robust_scale = 1.4826 * mad  # converts MAD to equivalent Gaussian σ
+
+        if robust_scale > 1e-8:
+            # Flag clients more than 2 robust-σ above median (≈ top ~2% for Gaussian)
+            threshold = median_proj + 2.0 * robust_scale
+        else:
+            # Fallback: flag top f/n fraction by projection norm
+            f_frac = max(0.25, len(anomalous_indices) / n_clients)
+            threshold = np.percentile(projection_norms, 100 * (1 - f_frac))
+
         byzantine_mask = projection_norms > threshold
-        
-        byzantine_clients = [client_ids[i] for i in range(n_clients) 
-                            if byzantine_mask[i]]
-        
+        byzantine_clients = [client_ids[i] for i in range(n_clients)
+                             if byzantine_mask[i]]
+
         return byzantine_clients
     
     def _statistical_outlier_detection(self,
