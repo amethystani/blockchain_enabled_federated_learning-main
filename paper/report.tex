@@ -1,53 +1,44 @@
-\documentclass[conference]{IEEEtran}
-\IEEEoverridecommandlockouts
-\usepackage{cite}
+%% Springer LNCS format
+\documentclass[runningheads]{llncs}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
 \usepackage{amsmath,amssymb,amsfonts}
+\usepackage{mathtools}
 \usepackage{graphicx}
-\usepackage{textcomp}
+\usepackage[hidelinks]{hyperref}
 \usepackage{xcolor}
-\usepackage{tikz}
-\usepackage{pgfplots}
-\pgfplotsset{compat=1.17}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{enumerate}
-\usepackage{mathtools}
-\usepackage{amsthm}
-\usepackage[utf8]{inputenc}
-\theoremstyle{plain}
-\newtheorem{theorem}{Theorem}
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{corollary}[theorem]{Corollary}
-\newtheorem{proposition}[theorem]{Proposition}
-\theoremstyle{definition}
-\newtheorem{definition}{Definition}
-\newtheorem{remark}{Remark}
+\usepackage{booktabs}
+\usepackage{cite}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\graphicspath{{figures/}}
+% LNCS already defines: theorem, lemma, corollary, proposition, definition, remark, proof
+% No additional theorem declarations needed
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
-\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
-    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 \begin{document}
 
-    \title{Spectral Sentinel: A Self-Stabilizing Byzantine-Robust Federated Learning System via Sketched Random Matrix Theory on Blockchain}
-    
-    \author{\IEEEauthorblockN{Animesh Mishra}
-    \IEEEauthorblockA{\textit{Department of Computer Science \& Engineering} \\
-    am847@snu.edu.in}
-    \and
-    \IEEEauthorblockN{Aryaman Srivastava}
-    \IEEEauthorblockA{\textit{Department of Computer Science \& Engineering} \\
-    as533@snu.edu.in}
-    }
+\title{Spectral Sentinel: A Self-Stabilizing Byzantine-Robust\\
+Federated Learning System via Sketched Random Matrix Theory}
+
+\author{Animesh Mishra\inst{1} \and Aryaman Srivastava\inst{1}}
+\authorrunning{A. Mishra and A. Srivastava}
+\institute{Department of Computer Science \& Engineering,
+Shiv Nadar University, Greater Noida, India\\
+\email{\{am847,as533\}@snu.edu.in}}
+
 \maketitle
 
 \begin{abstract}
 Decentralized Federated Learning (DFL) is a distributed computing problem where $n$ processes collaboratively train a global model without centralized trust, while tolerating $f < n/2$ Byzantine faults. We present Spectral Sentinel, the first DFL protocol proven \emph{self-stabilizing} in the sense of Dijkstra~(1974): from \emph{any} initial model state---including adversarially corrupted---the system converges to and remains in a legitimate configuration within $T^* = O(\sigma f/\varepsilon^2 + f^2/\varepsilon)$ rounds, where $\sigma^2$ bounds honest gradient variance and $\varepsilon$ is the convergence tolerance. Our detection mechanism exploits Random Matrix Theory (RMT): honest Non-IID gradients obey the Marchenko-Pastur (MP) law in their covariance eigenspectrum, while Byzantine perturbations create detectable spectral anomalies in the bulk tail, enabling \emph{detection completeness} in one round when $\sigma^2 f^2 < 0.25$. The blockchain serves as the \emph{stabilizing shared memory}: its write-once semantic and BFT consensus guarantee that legitimate round completions are permanently recorded and cannot be erased by Byzantine nodes---a strictly stronger medium than classical shared registers. We prove a matching information-theoretic lower bound $\Omega(\sigma f/\sqrt{T})$, establishing Spectral Sentinel as \emph{optimally self-stabilizing}: no Byzantine-resilient FL protocol can achieve strictly faster stabilization. A phase transition at $\sigma^2 f^2 = 0.25$ characterizes when self-stabilization becomes information-theoretically impossible---analogous to FLP impossibility in asynchronous consensus. Algorithmic contributions include layer-wise sketching via Frequent Directions (reducing memory from $O(d^2)$ to $O(k^2)$) enabling deployment on 345M-parameter models. Experimental validation across 12 attack-aggregator combinations on a local Hardhat blockchain testnet achieves 78.4\% accuracy versus 48--63\% for baselines, with 100\% Byzantine detection rate and formal verification of Safety, Liveness, and Self-Stabilization properties.
 \end{abstract}
 
-\begin{IEEEkeywords}
-Self-Stabilization, Byzantine Fault Tolerance, Federated Learning, Random Matrix Theory, Distributed Systems, Blockchain, Marchenko-Pastur Law
-\end{IEEEkeywords}
+\keywords{Self-Stabilization \and Byzantine Fault Tolerance \and Federated Learning \and Random Matrix Theory \and Blockchain \and Marchenko-Pastur Law}
 
 \section{Introduction}
 
@@ -69,7 +60,7 @@ This paper introduces \emph{Spectral Sentinel}, a Byzantine-robust FL protocol p
 
 The contributions of this work are fivefold:
 
-\textbf{1. Self-Stabilization Proof (SSS 2026):} We prove Spectral Sentinel is the first Byzantine-robust FL protocol that is \emph{self-stabilizing} in Dijkstra's sense: from any initial state, it reaches a legitimate configuration in $T^* = O(\sigma f/\varepsilon^2 + f^2/\varepsilon)$ rounds, with closure (once legitimate, stays legitimate). We also prove an impossibility at $\sigma^2 f^2 \geq 0.25$ (Theorem~\ref{thm:phase_impossibility}).
+\textbf{1. Self-Stabilization Proof (distributed systems):} We prove Spectral Sentinel is the first Byzantine-robust FL protocol that is \emph{self-stabilizing} in Dijkstra's sense: from any initial state, it reaches a legitimate configuration in $T^* = O(\sigma f/\varepsilon^2 + f^2/\varepsilon)$ rounds, with closure (once legitimate, stays legitimate). We also prove an impossibility at $\sigma^2 f^2 \geq 0.25$ (Theorem~\ref{thm:phase_impossibility}).
 
 \textbf{2. Blockchain as Self-Stabilizing Shared Memory:} We formalize the blockchain as a distributed shared-memory substrate with strictly stronger properties than classical shared registers: Byzantine fault tolerance ($f < n/2$ arbitrary faults vs.\ crash-only), write-once immutability, and permanent history---enabling the first self-stabilizing FL system under the Byzantine fault model.
 
@@ -113,24 +104,66 @@ g_i^t = \nabla F_i(w^t) + \xi_i^t
 \end{equation}
 where $\xi_i^t$ is stochastic noise with coordinate-wise variance bounded by $\sigma^2$, i.e., $\mathbb{E}[(\xi_i^t)_j^2] \leq \sigma^2$ for all coordinates $j \in [d]$.
 
-\subsection{Byzantine Threat Model}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig_architecture.png}
+\caption{Spectral Sentinel system architecture. Honest and Byzantine clients submit gradients; the aggregator performs spectral detection via the Marchenko-Pastur test; the result is committed on-chain. The blockchain's write-once immutability provides the self-stabilizing shared memory substrate.}
+\label{fig:architecture}
+\end{figure}
 
-We consider a $(\sigma, f)$-Byzantine threat model where:
-\begin{itemize}
-\item Up to $f < n/2$ clients are Byzantine adversaries
-\item Byzantine clients can send arbitrary gradient vectors $g_i^t \in \mathbb{R}^d$
-\item Honest gradients have coordinate-wise variance bounded by $\sigma^2$
-\item Byzantine clients have complete knowledge of the aggregation algorithm but cannot break cryptographic primitives
-\end{itemize}
+\subsection{Formal Distributed System Model}
+\label{sec:dist_model}
 
-Byzantine clients may employ sophisticated attacks including:
-\begin{itemize}
-\item \textbf{Sign-flipping:} $g_i = -\alpha \cdot g_{\text{honest}}$ for $\alpha > 0$
-\item \textbf{ALIE (A Little Is Enough) \cite{alie_attack}:} Carefully crafted gradients that shift the mean
-\item \textbf{Adaptive attacks \cite{adaptive_aggregation}:} Gradients designed to evade specific detection mechanisms
-\item \textbf{Model poisoning \cite{fl_poisoning}:} Long-term attacks that degrade model performance gradually
-\item \textbf{Backdoor attacks \cite{backdoor_fl}:} Injecting backdoors into the global model
-\end{itemize}
+We model the federated learning system as a message-passing distributed system in the \emph{synchronous rounds} model~\cite{byzantine_generals}.
+
+\smallskip
+\noindent\textbf{Processes.} The system consists of $n$ processes $\mathcal{P} = \{p_1,\ldots,p_n\}$: one \emph{coordinator} (aggregator) and $n-1$ \emph{clients}. Each process has a local state comprising its current model parameters $w^t \in \mathbb{R}^d$.
+
+\smallskip
+\noindent\textbf{Communication.} Processes communicate via authenticated point-to-point channels. The coordinator broadcasts $w^t$; clients reply with gradient messages $g_i^t$.
+
+\smallskip
+\noindent\textbf{Execution.} An \emph{execution} is an infinite sequence of rounds $t = 0, 1, 2, \ldots$ In each round: (1) coordinator broadcasts $w^t$; (2) each client computes and sends $g_i^t$; (3) coordinator aggregates to produce $w^{t+1}$; (4) aggregated hash is written to the blockchain.
+
+\smallskip
+\noindent\textbf{Configurations.} A \emph{configuration} $C = (w, \mathcal{B})$ is a global state comprising the model parameters $w \in \mathbb{R}^d$ and the set $\mathcal{B} \subseteq \mathcal{P}$ of Byzantine clients ($|\mathcal{B}| = f$).
+
+\subsection{Threat Model and Assumptions}
+\label{sec:threat_model}
+
+\noindent\textbf{Assumption 1 (Byzantine Fault Model).}
+At most $f < n/2$ processes are \emph{Byzantine}: they may deviate arbitrarily from the protocol, send any gradient $g_i^t \in \mathbb{R}^d$, and collude. Byzantine processes have full knowledge of the aggregation algorithm but cannot break cryptographic primitives (hash functions, digital signatures).
+
+\noindent\textbf{Assumption 2 (Honest Gradient Variance).}
+Each honest client $i \in \mathcal{H} = \mathcal{P} \setminus \mathcal{B}$ computes $g_i^t = \nabla F_i(w^t) + \xi_i^t$ where stochastic noise $\xi_i^t$ satisfies $\mathbb{E}[(\xi_i^t)_j^2] \leq \sigma^2$ coordinate-wise. We call $(\sigma, f)$ the \emph{heterogeneity-Byzantine profile}.
+
+\noindent\textbf{Assumption 3 (Phase Transition Condition).}
+$\sigma^2 f^2 < 0.25$. This necessary condition ensures Byzantine gradients create detectable spectral anomalies (see Theorem~\ref{thm:phase_impossibility}). When violated, no gradient-information-only protocol can distinguish Byzantine from honest clients.
+
+\noindent\textbf{Assumption 4 (Blockchain Liveness).}
+The blockchain maintains \emph{liveness}: honest transactions submitted by the majority are eventually finalized. This requires that the blockchain's own BFT consensus~\cite{bft_consensus} tolerates at most $\lfloor(m-1)/3\rfloor$ faulty validators out of $m$ (standard PBFT assumption).
+
+\noindent\textbf{Assumption 5 (Transient Faults).}
+Byzantine behavior may occur at any round including round 0 (corrupted initialization). This is the standard \emph{self-stabilization} assumption from Dijkstra~\cite{dijkstra_self_stab}: no assumptions are made on the initial state.
+
+\smallskip
+\noindent\textbf{What we do NOT assume:}
+\begin{enumerate}[(i)]
+\item We do \emph{not} assume Byzantine clients are static; they may change identity across rounds.
+\item We do \emph{not} assume a trusted initialization; the initial model may be adversarially corrupted.
+\item We do \emph{not} require synchronization beyond the per-round communication pattern.
+\end{enumerate}
+
+\smallskip
+\noindent\textbf{Attack taxonomy.} Byzantine clients employed in our experiments:
+\begin{enumerate}[(i)]
+\item \textbf{MinMax~\cite{fl_poisoning}:} Minimizes aggregated gradient norm, maximizing $\|\bar{g}^t\| \to 0$.
+\item \textbf{Gaussian:} $g_i = \mathcal{N}(0, c\sigma^2 I)$ with large $c$.
+\item \textbf{Label Flip:} Gradients computed on labels shifted by $+1 \pmod{K}$.
+\item \textbf{ALIE~\cite{alie_attack}:} $g_i = \bar{g}_{\mathcal{H}} + z \cdot \hat{\sigma}_{\mathcal{H}}$ where $z$ is chosen to stay within statistical tolerance.
+\item \textbf{Sign flip:} $g_i = -\alpha \cdot g_{\text{honest}}$.
+\item \textbf{Zero gradient:} $g_i = 0$ (free-riding / denial of service).
+\end{enumerate}
 
 \subsection{Problem Statement}
 
@@ -203,6 +236,13 @@ For any Byzantine detection algorithm using only gradient information, there exi
 \begin{proof}
 The phase transition follows from information-theoretic bounds. When $\sigma^2 f^2 \geq 0.25$, Byzantine gradients can be constructed to match the first and second moments of honest gradients exactly, making statistical detection impossible. Below the transition, the perturbation required to evade detection violates the variance bound, creating detectable spectral anomalies.
 \end{proof}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig_mp_detection.png}
+\caption{(a) Eigenvalue spectra of gradient Gram matrices: honest gradients cluster within the MP bulk ($\lambda \leq \lambda_+$), while Byzantine attacks create spike eigenvalues beyond $\lambda_+$. (b) Detection rate vs.\ $\sigma^2 f^2$: Spectral Sentinel achieves near-perfect detection below the $\sigma^2 f^2 = 0.25$ phase transition.}
+\label{fig:mp_detection}
+\end{figure}
 
 \section{Spectral Sentinel Algorithm}
 
@@ -367,9 +407,16 @@ We evaluate Spectral Sentinel across three deployment scales using naturally par
 
 Byzantine ratios tested: 10\%, 20\%, 30\%, 40\%, 49\%. Attack types: 12 sophisticated attacks including ALIE \cite{alie_attack}, backdoor attacks \cite{backdoor_fl}, model poisoning \cite{fl_poisoning}, Fall of Empires \cite{fall_of_empires}, IPM attacks \cite{ipm_attack}, min-max attacks, label-flipping, sign-flip, gradient inversion, zero gradient, Gaussian noise, adaptive spectral-aware attacks \cite{adaptive_aggregation}, and game-theoretic Nash equilibrium adversaries. All attacks were evaluated under both IID and Non-IID data distributions \cite{non_iid}.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig_spectral_fingerprints.png}
+\caption{Spectral fingerprints of six Byzantine attack types in the Gram eigenvalue space ($n=15$, $d=512$). The dashed line marks $\lambda_+$; eigenvalues to the right are Byzantine outliers. No-Attack shows no outliers (MP law holds); MinMax and Gaussian attacks create 4 outliers each; Zero gradient (free-riding) creates 2 subtle outliers.}
+\label{fig:spectral_fingerprints}
+\end{figure}
+
 \subsection{Detection Performance}
 
-Table~\ref{tab:detection_results} summarizes detection rates across different Byzantine ratios.
+Table~\ref{tab:detection_results} summarizes detection rates across different Byzantine ratios. Figure~\ref{fig:spectral_fingerprints} visualizes the distinct spectral signatures of each attack.
 
 \begin{table}[htbp]
 \centering
@@ -937,7 +984,7 @@ Difference & 0.3pp & - \\
 
 Online MP tracking via sliding window ($\tau=50$ rounds) matches offline calibration within 0.3pp accuracy (89.2\% vs 89.5\%), demonstrating that adaptive threshold tracking can effectively handle data drift without requiring pre-calibration on held-out data. We also implement automated threshold tuning via cross-validation on honest client data, which calibrates detection thresholds to minimize false positives while maximizing detection rate. This automated calibration achieves optimal threshold selection in 5-fold cross-validation, reducing false positives by 1.2\% compared to fixed thresholds.
 
-\section{Self-Stabilization Properties (SSS 2026 Track)}
+\section{Self-Stabilization Analysis}
 \label{sec:self_stabilization}
 
 \subsection{Formal Self-Stabilization Framework}
@@ -982,6 +1029,13 @@ Telescoping over $T^* = O(\sigma f/\varepsilon^2)$ rounds yields $\min_t \|\nabl
 \subsection{Blockchain as Self-Stabilizing Shared Memory}
 
 Classical self-stabilizing algorithms~\cite{dijkstra_self_stab,dolev_self_stab} assume shared registers accessible to all processes. Our blockchain provides a stronger substrate:
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig_blockchain_stabilizer.png}
+\caption{Blockchain as self-stabilizing shared memory. (a) Timeline showing monotonic progress: each finalized round is permanently recorded on-chain, preventing Byzantine rollback. (b) Formal property comparison between classical shared memory and blockchain-based stabilization, highlighting the stronger guarantees provided by Byzantine fault-tolerant consensus.}
+\label{fig:blockchain_stabilizer}
+\end{figure}
 
 \begin{table}[htbp]
 \centering
@@ -1031,6 +1085,13 @@ FLP impossibility requires $\geq 1$ crash fault; our impossibility requires $\si
 \end{remark}
 
 \subsection{Experimental Validation of Self-Stabilization}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig_self_stabilization.png}
+\caption{Self-stabilization from arbitrary initial states ($n=20$, $f=6$, $\sigma^2=0.01$, $\varepsilon=0.05$, $T^*=14$). (a) Error trajectories: all initial corruption levels converge below $\varepsilon$ (dashed line). (b) Stabilization time $T_\mathrm{stab}$ remains bounded within $[4, T^*]$ across a $500\times$ range of initial corruption---a logarithmic dependence, not linear. This is the defining property of self-stabilization.}
+\label{fig:self_stab_recovery}
+\end{figure}
 
 Figure~\ref{fig:self_stab_recovery} demonstrates recovery from arbitrary initial states. Starting from corrupted models $\|w^0 - w^*\| \in \{0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 50.0\}$, Spectral Sentinel stabilizes within a bounded number of rounds $T^*$. Critically, the stabilization time varies only from 4 to 14 rounds across a $500\times$ range of initial corruption magnitudes---a logarithmic rather than linear dependence. This is the defining property of self-stabilization: the convergence time is a function of the \emph{problem parameters} ($\sigma$, $f$, $\varepsilon$), not of the initial state.
 
