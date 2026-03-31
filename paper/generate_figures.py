@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """
 Generate research-grade figures for the Spectral Sentinel paper.
-All figures are designed for Springer LNCS two-column format:
+Designed for Springer LNCS single-column format (textwidth ≈ 122 mm):
+  - figsize: ~4.8 inches wide so fonts render at correct pt size when
+    LaTeX inserts with width=\textwidth
   - Line widths: 1.5–2.5pt
-  - Font size: 9–11pt (matches LNCS body text)
+  - Font size: 9–11pt
   - DPI: 300 for crisp printing
   - Color scheme: colorblind-friendly (Wong palette)
 """
@@ -196,7 +198,7 @@ def fig_system_architecture():
     txt(8.8,4.82,r'$\hat{\mathcal{B}}=\{i:g_i\notin\mathrm{MP\ bulk}\}$',fs=8.5)
     txt(8.8,4.52,r'$\mathcal{H}=[n]\setminus\hat{\mathcal{B}}$',fs=8.5)
     for ci in range(4):
-        mark='✗' if ci==3 else '✓'; col_=EDG['cb'] if ci==3 else EDG['ch']
+        mark='[X]' if ci==3 else '[OK]'; col_=EDG['cb'] if ci==3 else EDG['ch']
         bg_='#FFCDD2' if ci==3 else '#C8E6C9'; yp=4.18-ci*0.48
         ax.add_patch(plt.Rectangle((8.08,yp),1.42,0.36,
             facecolor=bg_,edgecolor=col_,lw=0.7,alpha=0.85,zorder=4))
@@ -227,7 +229,7 @@ def fig_system_architecture():
         if bi<2: arr(10.58,by,10.58,by-0.1,col=EDG['bc'],lw=0.8)
     txt(10.6,3.12,'BFT Consensus',fs=9,bold=True,col=EDG['bc'])
     txt(10.6,2.88,r'$f<n/2$ Byzantine',fs=8)
-    for i,line in enumerate(['✦ Safety','✦ Liveness','✦ Closure']):
+    for i,line in enumerate(['* Safety','* Liveness','* Closure']):
         txt(10.6,2.62-i*0.24,line,fs=8,col='#0D47A1')
     txt(10.6,1.85,'Write-once immutable:',fs=8,bold=True,col='#555')
     txt(10.6,1.62,'No Byzantine rollback.',fs=7.5,italic=True,col='#777')
