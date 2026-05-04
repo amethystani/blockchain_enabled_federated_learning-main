@@ -1,6 +1,8 @@
 \section{Experimental Validation}
 \label{sec:experiments}
 
+Experiments \emph{validate} three theorem-level predictions, not establish ML-benchmark superiority: (i)~detection $>96\%$ below $\sigma^2\beta^2{=}0.25$ (Theorem~\ref{thm:spectral_anomaly}); (ii)~accuracy consistent with the $O(\sigma\beta/\sqrt{T})$ rate (Theorem~\ref{thm:convergence}); (iii)~bounded recovery $T^*$ from corrupted $w^0$ (Theorem~\ref{thm:self_stab}, Fig.~\ref{fig:self_stabilization}).
+
 \subsection{Experimental Setup}
 
 \subsubsection{Blockchain Infrastructure}
@@ -105,15 +107,12 @@ FedAvg~\cite{fedavg_original} & 48.1\% & None \\
 \end{tabular}
 \end{table}
 
-Our approach achieves a ${\sim}15$ percentage-point improvement over the best baseline
-(FLTrust at 63.7\%) and ${\sim}30$ points over FedAvg.
-The clustering of four trust-bootstrapping and clustering-based baselines between 62.9\%--63.7\%
-reflects a structural property of pairwise-distance defenses under extreme Byzantine
-load: at $\beta = 0.4$, Byzantine clients can spread their updates to match the
-pairwise diversity of honest gradients, while the global eigenvalue structure---which
-our spectral filter exploits---remains anomalous and detectable.
-Figure~\ref{fig:convergence} shows the per-round convergence dynamics, confirming that
-distance-based baselines plateau by round~70--80 while our protocol continues to improve.
+The ${\sim}15$\,pt.\ gap to FLTrust (63.7\%) and the 58--64\% baseline cluster reflect a
+structural floor of pairwise-distance defenses at $\beta=0.4$: Byzantine clients can match
+pairwise gradient diversity, but the global eigenvalue structure our filter exploits remains
+anomalous (consistent with~\cite{farhadkhani_byzsgd}).
+Figure~\ref{fig:convergence} confirms distance-based baselines plateau by round~70--80,
+matching the $O(\sigma\beta/\sqrt{T})$ predicted rate (Theorem~\ref{thm:convergence}).
 
 \begin{figure}[htbp]
 \centering

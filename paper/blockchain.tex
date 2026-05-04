@@ -19,16 +19,19 @@ The blockchain resolves this gap structurally.
 The $n$ FL clients (Assumption~1) and the $m$ blockchain validators (Assumption~4) are
 \emph{distinct} populations: FL clients tolerate $f < n/2$ Byzantine faults; validators
 tolerate a separate budget of $f_v < m/3$ faulty validators (PBFT~\cite{bft_consensus}).
-Once a training round $t$ is finalized, the committed model hash
-$\mathrm{ckpt}_t = H(w_{t+1} \| t \| |\mathcal{T}_t|)$ cannot be altered or erased.
-This is not ``outsourcing'' self-stabilization to the blockchain---it is applying
-BFT consensus as the Byzantine-fault-tolerant analog of Dijkstra's shared registers.
-The write-once semantic enables the monotonic progress argument in
-Lemma~\ref{lem:closure}: each legitimately completed round advances the training
-trajectory permanently, and Byzantine clients cannot force state regression.
-Table~\ref{tab:blockchain_vs_shmem} (Appendix~\ref{app:blockchain}) formalizes
-this comparison; Figure~\ref{fig:blockchain_stabilizer} (Appendix~\ref{app:experiments})
-shows the closure timeline empirically.
+Once round $t$ is finalized, $\mathrm{ckpt}_t = H(w_{t+1} \| t \| |\mathcal{T}_t|)$
+cannot be altered or erased.
+\emph{Concretely, without this substrate, Byzantine clients can replay previously
+rejected gradients in later rounds (the coordinator has no immutable record of which
+rounds were legitimately closed), forcing the trajectory to regress to a corrupted
+state---an attack no in-memory aggregator prevents under the Byzantine fault model.}
+The blockchain closes this gap: Byzantine clients cannot fabricate or rewrite the
+on-chain history (Assumption~4), so each legitimately committed round advances the
+trajectory permanently, enabling Lemma~\ref{lem:closure}.
+Concretely: shared registers tolerate only crash faults and permit overwrites; the chain
+tolerates Byzantine validators ($f_v{<}m/3$), enforces write-once semantics, and preserves
+history (Table~\ref{tab:blockchain_vs_shmem}, Appendix~\ref{app:blockchain};
+Fig.~\ref{fig:blockchain_stabilizer}, Appendix~\ref{app:experiments}).
 
 \subsection{Round Structure}
 
