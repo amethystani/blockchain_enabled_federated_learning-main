@@ -55,3 +55,38 @@ phase transition.
 Blockchain integration in FL~\cite{blockchain_fl,blockchain_smart} has focused on
 auditability; we instead formalize the ledger as a self-stabilizing shared memory
 substrate with Byzantine fault tolerance strictly stronger than classical shared registers.
+
+\subsection{Positioning}
+
+Our work differs from all of the above along three orthogonal axes.
+
+\textbf{Self-stabilization vs.\ robustness.}
+Byzantine-robust FL methods~\cite{krum,bulyan,crfl,flame,byzshield} guarantee convergence
+from a \emph{known-good} initialization but offer no recovery guarantee from arbitrary
+corrupted states.
+Our protocol is the first to provide a formal recovery time bound
+$T^* = O(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon)$ from any starting
+configuration---satisfying the practical self-stabilization definition
+of~\cite{dolev_self_stab} rather than merely stability under sustained attacks.
+
+\textbf{Spectral mechanism vs.\ pairwise distance.}
+Krum~\cite{krum}, Trimmed Mean~\cite{byzantine_ml}, Bulyan~\cite{bulyan}, and FLTrust~\cite{crfl}
+all operate on pairwise or coordinate-wise distances between gradient vectors.
+These metrics degrade at $\beta > 1/3$ because Byzantine clients can spread their updates
+to match honest pairwise diversity.
+Our spectral filter operates on the \emph{global eigenvalue distribution}, which remains
+anomalous even when individual Byzantine updates appear locally plausible.
+The detection threshold is derived analytically from the BBP phase transition~\cite{bbp_transition},
+yielding the information-theoretic impossibility at $\sigma^2\beta^2 = 0.25$ as a
+matching lower bound.
+
+\textbf{Blockchain as stabilizing medium vs.\ auditability.}
+Prior blockchain FL work~\cite{blockchain_fl,blockchain_smart} uses the ledger for
+auditability and transparency.
+We use it structurally: the write-once BFT consensus provides the Byzantine-fault-tolerant
+analog of Dijkstra's shared registers~\cite{dijkstra_self_stab}, enabling the monotonic
+progress argument (Lemma~\ref{lem:closure}) that classical shared memory cannot support
+under Byzantine faults.
+The closest SSS-community precedents---Byzantine reliable broadcast~\cite{sss_byz_broadcast,sss_byz_counter}
+and blockchain sharding~\cite{sss_blockchain_sharding}---provide distributed safety
+properties but do not address the self-stabilization of a learning protocol.
