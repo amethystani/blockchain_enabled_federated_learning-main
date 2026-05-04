@@ -175,7 +175,7 @@ filter correctly excludes Byzantine gradients in every round, enabling stable
 per-round descent.
 Recovery from \emph{transient} attack---where Byzantine clients cease activity mid-training---is
 analyzed in the stabilization proof (Theorem~\ref{thm:self_stab}) with bounded
-recovery time $T^* = O(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon)$.}
+recovery time $T^* = O(\Delta_0(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon))$ (Assumption~\ref{ass:bounded_init}).}
 \label{fig:convergence}
 \end{figure}
 

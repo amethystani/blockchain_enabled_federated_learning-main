@@ -26,6 +26,7 @@ impossibility at $\sigma^2\beta^2 \geq 0.25$. Closure is probabilistic with fail
 probability $\leq Te^{-k/\log^2 k} < 10^{-28}$ for $k{=}256$, $T{=}1000$.
 \end{remark}
 
+\setcounter{assumption}{5}
 \begin{assumption}[Bounded Initialization]
 \label{ass:bounded_init}
 $F(w^0) - F^* \leq \Delta_0$ for a known constant $\Delta_0$ (standard in non-convex
@@ -76,7 +77,7 @@ timeline empirically.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.96\textwidth,height=0.22\textheight,keepaspectratio]{fig_self_stabilization.pdf}
+\includegraphics[width=0.96\textwidth,height=0.16\textheight,keepaspectratio]{fig_self_stabilization.pdf}
 \caption{Practical self-stabilization validated empirically ($w^*$ known in this
 controlled setting; $\|w^t-w^*\|$ is used as a proxy for $\|\nabla F(w^t)\|$).
 \textbf{(a)} Seven initial corruption levels spanning $0.1$--$50\times\,\varepsilon$

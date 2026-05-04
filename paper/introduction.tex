@@ -10,7 +10,7 @@ The self-stabilizing Byzantine robust aggregation problem requires: given $n$ pr
 \begin{equation}
 \min_{t \leq T}\mathbb{E}[\|\nabla F(w^t)\|^2] \leq O\left(\frac{\sigma\beta}{\sqrt{T}} + \frac{\beta^2}{T}\right)
 \end{equation}
-starting from a bounded initialization $w^0$ with $F(w^0)-F^* \leq \Delta_0$ (Assumption~6), where $\beta = f/n$ and $\sigma^2$ bounds coordinate-wise variance of honest gradients. This is strictly harder than standard convergence: it requires both fault tolerance \emph{and} global recovery from an adversarially corrupted model state.
+starting from a bounded initialization $w^0$ with $F(w^0)-F^* \leq \Delta_0$ (Assumption~6, Section~\ref{sec:self_stabilization}), where $\beta = f/n$ and $\sigma^2$ bounds coordinate-wise variance of honest gradients. This is strictly harder than standard convergence: it requires both fault tolerance \emph{and} global recovery from an adversarially corrupted model state.
 
 Existing Byzantine-robust methods face fundamental barriers. Geometric median requires $O(n^2 d)$ computation per round~\cite{geometric_median}. Krum and Bulyan reject valid Non-IID updates. Certified defenses (CRFL, ByzShield) assume bounded perturbations but cannot handle arbitrary corruption. Critically, \emph{none} provide self-stabilization guarantees. While other robust FL paradigms like CORNFLQS~\cite{cornflqs} address natural structural heterogeneity such as quantity skew in clustered settings, they do not consider malicious Byzantine adversaries or the problem of self-stabilization from catastrophic failure.
 

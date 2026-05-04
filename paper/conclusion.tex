@@ -1,16 +1,13 @@
-\vspace{-4pt}
+\vspace{-10pt}
 \section{Conclusion}
 \label{sec:conclusion}
 
-We presented the first Byzantine-robust federated learning protocol with formal practical
-self-stabilization guarantees~\cite{arora_gouda,dolev_kat_practical}: from any bounded
-initialization ($F(w^0)-F^*\leq\Delta_0$, Assumption~6), the protocol reaches a
-legitimate configuration within $T^* = O(\Delta_0(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon))$
-rounds and converges at $O(\sigma\beta/\sqrt{T} + \beta^2/T)$, with the BBP phase
-transition at $\sigma^2\beta^2=0.25$ providing a matching detection impossibility
-\cite{bbp_transition,byzantine_ml}.
-Empirical evaluation across 12 attack types achieves 78.4\% accuracy at 40\% Byzantine
-fraction---15 points above FLTrust~\cite{crfl}.
-Open problems: fully decentralized spectral aggregation, asynchronous self-stabilization,
-DP integration preserving the phase-transition condition, and tight Non-IID concentration
-bounds (Appendix~\ref{app:game_theory}).
+We present the first practically self-stabilizing Byzantine-robust FL
+protocol~\cite{arora_gouda,dolev_kat_practical}: bounded initialization
+(Assumption~\ref{ass:bounded_init}) guarantees convergence within
+$T^*\!=\!O(\Delta_0(\sigma^2\beta^2/\varepsilon^2+\beta^2/\varepsilon))$ rounds at rate
+$O(\sigma\beta/\sqrt{T}+\beta^2/T)$, with $\sigma^2\beta^2\!=\!0.25$ as a matching
+impossibility~\cite{bbp_transition,byzantine_ml}; 78.4\% accuracy at 40\% Byzantine
+fraction (${\sim}15$ pts.\ above FLTrust~\cite{crfl}) across 12 attack types.
+Open problems: decentralized spectral aggregation, asynchronous self-stabilization,
+DP integration, and tight Non-IID bounds (Appendix~\ref{app:game_theory}).
