@@ -23,20 +23,6 @@ These assumptions are \emph{necessary}: Theorem~\ref{thm:phase_impossibility} sh
 self-stabilization is information-theoretically impossible when they are violated.
 \end{remark}
 
-\begin{remark}[Synchrony Assumption]
-\label{rem:synchrony}
-Assumption~1 posits synchronous rounds, consistent with Dijkstra's original daemon
-model~\cite{dijkstra_self_stab} and the standard synchronous message-passing model
-used in Byzantine consensus~\cite{byzantine_generals}.
-Synchrony is not a limitation specific to our protocol: all existing self-stabilization
-results for Byzantine fault models operate under synchrony or bounded
-asynchrony~\cite{dolev_self_stab}.
-Our closure guarantees (Lemma~\ref{lem:closure}) hold exactly under this model.
-In practice, asynchronous clients are handled by the per-round deadline mechanism
-(Section~\ref{sec:blockchain}), which incurs at most 12\% degradation in detection rate
-empirically; a fully asynchronous formal treatment is acknowledged as future work
-(Section~\ref{sec:conclusion}).
-\end{remark}
 
 \begin{theorem}[Practical Self-Stabilization]
 \label{thm:self_stab}
@@ -48,9 +34,19 @@ thereafter (\emph{closure}).
 \end{theorem}
 
 \begin{proof}[Proof sketch]
-By Theorem~\ref{thm:spectral_anomaly} and Assumption~3, Byzantine gradients are detected with probability $\geq 1-e^{-k/\log^2 k}$ per round, giving $\mathbb{E}[\|\hat{g}^t-\bar{g}^t\|^2]\leq O(\sigma^2\beta^2)$ (Theorem~\ref{thm:convergence}).
-The blockchain's write-once immutability (Assumption~4) ensures each legitimate round is permanently recorded; Byzantine clients cannot force state regression.
-Telescoping the resulting descent $F(w^{t+1})\leq F(w^t)-\eta\|\nabla F(w^t)\|^2+\eta^2 O(\sigma^2\beta^2)$ over $T^*$ rounds gives $\min_t\|\nabla F(w^t)\|^2\leq\varepsilon^2$.
+\emph{Legitimate configuration (round 1):}
+By Theorem~\ref{thm:spectral_anomaly} and Assumption~3, Byzantine gradients are detected
+with probability $\geq 1-e^{-k/\log^2 k}$ per round, so conditions (i)--(iii) of
+Definition~\ref{def:legit} hold from the first round onward.
+The blockchain's write-once immutability (Assumption~4) ensures no state regression.
+
+\emph{Convergence to $\varepsilon$-stationarity (in $T^*$ rounds):}
+Assuming $F(w^0)-F^*=O(1)$ (bounded initialization, without loss of generality for $L$-smooth $F$),
+the filtered aggregate satisfies $\mathbb{E}[\|\hat{g}^t-\bar{g}^t\|^2]\leq O(\sigma^2\beta^2)$
+(Theorem~\ref{thm:convergence}).
+Telescoping $F(w^{t+1})\leq F(w^t)-\eta\|\nabla F(w^t)\|^2+\eta^2 O(\sigma^2\beta^2)$ over $T^*$
+rounds with $\eta=O(1/\sqrt{T^*})$ gives
+$\min_t\mathbb{E}[\|\nabla F(w^t)\|^2]\leq\varepsilon$.
 \end{proof}
 
 \begin{lemma}[Closure via Blockchain Immutability]
@@ -62,25 +58,12 @@ in each subsequent round $t > t_0$ with per-round probability $\geq 1 - e^{-k/\l
 The proof follows from detection completeness (Property (i) above) combined with the
 fact that the on-chain record of round $t_0$ cannot be altered by the BFT consensus
 (Assumption~4 with $f < n/2$): Byzantine clients cannot force a state regression.
-Table~\ref{tab:blockchain_vs_shmem} summarizes how the blockchain substrate is
-strictly stronger than classical shared registers for self-stabilization.
-
-\begin{table}[htbp]
-\centering\small
-\caption{Blockchain vs.\ classical shared memory for self-stabilization.}
-\label{tab:blockchain_vs_shmem}
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{|l|c|c|}
-\hline
-\textbf{Property} & \textbf{Shared Mem.} & \textbf{Blockchain} \\
-\hline
-Fault model & Crash ($f{<}n/2$) & Byzantine ($f_v{<}m/3$) \\
-Write atomicity & Assumed & Tx finality \\
-History persistence & No & Yes (immutable) \\
-Self-healing & Manual & Automatic (BFT) \\
-\hline
-\end{tabular}
-\end{table}
+Table~\ref{tab:blockchain_vs_shmem} (Appendix~\ref{app:blockchain}) summarizes how the
+blockchain substrate provides strictly stronger self-stabilization properties than classical
+shared registers: Byzantine (not crash-only) fault model, write-once immutability, and
+automatic BFT self-healing.
+Figure~\ref{fig:blockchain_stabilizer} (Appendix~\ref{app:experiments}) shows the closure
+timeline empirically.
 
 \begin{figure}[htbp]
 \centering
@@ -121,5 +104,3 @@ lower bound~\cite{byzantine_ml} shows no single-round test can distinguish them 
 probability $> 1/2 + \epsilon$ for any $\epsilon > 0$, violating detection completeness
 and therefore self-stabilization.
 \end{proof}
-
-The boundary $\sigma^2\beta^2 = 0.25$ is an information-theoretic impossibility for gradient-based FL defenses, analogous in spirit (but distinct in mechanism) to FLP~\cite{flp_impossibility}.

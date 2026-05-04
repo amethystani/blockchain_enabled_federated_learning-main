@@ -12,17 +12,22 @@ At each round $t \in [T]$, the aggregator broadcasts $w^t$. Each honest client $
 $g_i^t = \nabla F_i(w^t) + \xi_i^t$,
 where $\xi_i^t$ is stochastic noise with coordinate-wise variance $\mathbb{E}[(\xi_i^t)_j^2] \leq \sigma^2$.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\textwidth]{fig_architecture.pdf}
-\caption{System architecture. Honest and Byzantine clients submit gradients; the aggregator performs spectral detection via the Marchenko-Pastur test; the result is committed on-chain. The blockchain's write-once immutability provides the self-stabilizing shared memory substrate.}
-\label{fig:architecture}
-\end{figure}
 
 \subsection{Formal Distributed System Model}
 \label{sec:dist_model}
 
 We model the system as a synchronous message-passing distributed system~\cite{byzantine_generals}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{flowdiag.jpeg}
+\caption{System architecture: honest and Byzantine clients submit gradients; the server
+applies the Marchenko-Pastur spectral filter; the result is committed on-chain.
+The blockchain's write-once immutability under BFT consensus provides the
+self-stabilizing shared memory substrate (Section~\ref{sec:blockchain}).
+A detailed pipeline diagram is in Appendix~\ref{app:blockchain}.}
+\label{fig:architecture}
+\end{figure}
 
 \smallskip\noindent\textbf{Processes.} $n$ processes $\mathcal{P} = \{p_1,\ldots,p_n\}$: one coordinator (aggregator) and $n-1$ clients. Each process has local state $w^t \in \mathbb{R}^d$.
 

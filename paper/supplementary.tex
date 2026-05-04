@@ -5,8 +5,36 @@
 %% Appendix pages are also excluded per LNCS submission guidelines.
 %% ============================================================
 
-\section{Smart Contract Implementation Details}
+\section{System Architecture and Smart Contract Details}
 \label{app:blockchain}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Blockchain vs.\ classical shared memory for self-stabilization.}
+\label{tab:blockchain_vs_shmem}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Property} & \textbf{Shared Mem.} & \textbf{Blockchain} \\
+\hline
+Fault model & Crash ($f{<}n/2$) & Byzantine ($f_v{<}m/3$) \\
+Write atomicity & Assumed & Tx finality \\
+History persistence & No & Yes (immutable) \\
+Self-healing & Manual & Automatic (BFT) \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{fig_architecture.pdf}
+\caption{Full system architecture pipeline: (1) Frequent Directions sketching compresses
+client gradients; (2) eigendecomposition of the Gram matrix; (3) KS test against the
+MP distribution; (4) Byzantine-filtered aggregation; (5) BFT on-chain checkpoint.
+The blockchain's write-once immutability provides the self-stabilizing shared memory
+substrate (Section~7).}
+\label{fig:pipeline}
+\end{figure}
 
 \subsection{Contract Functions}
 
@@ -49,10 +77,9 @@ A formal treatment of asynchronous self-stabilization remains future work.
 
 \subsection{Sketch Size vs.\ Accuracy}
 
-Table~\ref{tab:sketch_size_detail} shows the accuracy--memory tradeoff across sketch sizes
-$k \in \{128, 256, 512, 1024\}$.
-CNNs saturate at $k=256$ (88.5\%), while transformers require $k=512$ (89.2\%) for
-optimal performance; beyond $k=512$, accuracy gains are below 0.3\,pp.
+Table~\ref{tab:sketch_size_detail} shows accuracy--memory tradeoffs across $k \in \{128,256,512,1024\}$.
+CNNs saturate at $k{=}256$ (88.5\%); transformers need $k{=}512$ (89.2\%);
+gains beyond $k{=}512$ are below 0.3\,pp.
 
 \begin{table}[htbp]
 \centering
@@ -171,6 +198,45 @@ $\sigma^2\beta^2 \geq 0.25$ & Impossible$^{\dagger}$ & 82.5\%$^{\dagger}$ \\
 
 \section{Extended Experimental Results}
 \label{app:experiments}
+
+\subsection{Spectral Detection and Phase Transition Figures}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{fig_mp_detection.pdf}
+\caption{Spectral detection mechanism.
+\textbf{(a)} Eigenvalue histograms for honest-only gradients (blue, MP bulk)
+vs.\ a Byzantine attack (red, outlier spikes above $\lambda_+$, dashed orange).
+\textbf{(b)} Empirical detection rate vs.\ $\sigma^2\beta^2$:
+below $0.25$ (green region) detection exceeds 96\%; beyond it (red region)
+detection degrades to chance---the BBP impossibility (Theorem~\ref{thm:phase_impossibility}).}
+\label{fig:mp_detection}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{fig_blockchain_stabilizer.pdf}
+\caption{Blockchain as BFT stabilizing shared memory.
+\textbf{(a)} Protocol timeline: Byzantine attack window (rounds 5--9, red shading)
+degrades active model quality, but the on-chain record reflects only legitimately
+finalized rounds (dashed green)---Byzantine clients cannot roll back committed hashes,
+enabling immediate re-entry into a legitimate configuration at round~9 (Lemma~\ref{lem:closure}).
+\textbf{(b)} Property comparison: blockchain satisfies Safety, Validity, Liveness,
+and Practical Self-Stabilization (Closure$+$Convergence); classical shared memory
+lacks Byzantine validity and closure (cf.\ Table~\ref{tab:blockchain_vs_shmem}).}
+\label{fig:blockchain_stabilizer}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{fig_spectral_fingerprints.png}
+\caption{Spectral fingerprints of six Byzantine attack types ($n=15$, $d=512$).
+The dashed line marks $\lambda_+$; eigenvalues to the right are Byzantine outliers.
+No-Attack shows no outliers (MP law holds); MinMax and Gaussian attacks create 4 outliers
+each; Zero-gradient (free-riding) creates 2 subtle outliers, yet all are detected
+by the KS test.}
+\label{fig:spectral_fingerprints}
+\end{figure}
 
 \subsection{Foundation Model Scale (345M Parameters)}
 

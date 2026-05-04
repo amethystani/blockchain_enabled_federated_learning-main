@@ -27,24 +27,8 @@ The write-once semantic enables the monotonic progress argument in
 Lemma~\ref{lem:closure}: each legitimately completed round advances the training
 trajectory permanently, and Byzantine clients cannot force state regression.
 Table~\ref{tab:blockchain_vs_shmem} (Section~\ref{sec:self_stabilization}) formalizes
-this comparison.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\textwidth]{fig_blockchain_stabilizer.pdf}
-\caption{Blockchain as Byzantine-fault-tolerant stabilizing shared memory.
-\textbf{(a)} Protocol timeline showing a Byzantine attack window (rounds 5--9, shaded red).
-The active model quality drops during the attack, but the on-chain state (dashed green)
-reflects only legitimately finalized rounds: Byzantine clients cannot overwrite or roll back
-committed hashes. Once the spectral filter expels the attackers at round~9, the
-protocol re-enters a legitimate configuration immediately---the closure property
-(Lemma~\ref{lem:closure}).
-\textbf{(b)} Formal property comparison (Table~\ref{tab:blockchain_vs_shmem} in detail):
-the blockchain satisfies Safety, Validity, Liveness, and Practical Self-Stabilization
-(Closure + Convergence), while classical shared memory lacks Byzantine validity and
-the closure guarantee required for self-stabilization under Byzantine faults.}
-\label{fig:blockchain_stabilizer}
-\end{figure}
+this comparison; Figure~\ref{fig:blockchain_stabilizer} (Appendix~\ref{app:experiments})
+shows the closure timeline empirically.
 
 \subsection{Round Structure}
 
