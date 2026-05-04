@@ -4,6 +4,7 @@ Baseline Aggregation Methods
 Collection of existing Byzantine-robust aggregators for comparison.
 """
 
+import inspect
 import torch
 import numpy as np
 from typing import List, Dict, Optional, Tuple
@@ -849,4 +850,24 @@ def get_aggregator(name: str, **kwargs) -> BaseAggregator:
         raise ValueError(f"Unknown aggregator: {name}. "
                         f"Available: {list(AGGREGATOR_REGISTRY.keys())}")
     
-    return AGGREGATOR_REGISTRY[name.lower()](**kwargs)
+    aggregator_cls = AGGREGATOR_REGISTRY[name.lower()]
+    signature = inspect.signature(aggregator_cls.__init__)
+    accepts_var_kwargs = any(
+        param.kind == inspect.Parameter.VAR_KEYWORD
+        for param in signature.parameters.values()
+    )
+
+    if accepts_var_kwargs:
+        filtered_kwargs = kwargs
+    else:
+        valid_params = {
+            param_name
+            for param_name in signature.parameters
+            if param_name != 'self'
+        }
+        filtered_kwargs = {
+            key: value for key, value in kwargs.items()
+            if key in valid_params
+        }
+
+    return aggregator_cls(**filtered_kwargs)

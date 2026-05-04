@@ -6,7 +6,7 @@ text = src.read_text(encoding="utf-8")
 
 NEW_FN = r'''# ─── Figure 1: System Architecture ───────────────────────────────────────────
 def fig_system_architecture():
-    """Beautiful detailed Spectral Sentinel ML pipeline diagram."""
+    """Beautiful detailed our approach ML pipeline diagram."""
     from matplotlib.patches import FancyBboxPatch
 
     fig, ax = plt.subplots(figsize=(13, 6.2))
@@ -51,7 +51,7 @@ def fig_system_architecture():
 
     # ── BIG AGGREGATOR BACKGROUND ──────────────────────────────────────
     fbox(1.95,0.12,7.35,5.75,'bg',lw=2.2,alpha=0.45,rad=0.3,zo=2)
-    txt(5.62,6.0,'Spectral Sentinel \u2014 Byzantine-Robust Aggregator',
+    txt(5.62,6.0,'our approach \u2014 Byzantine-Robust Aggregator',
         fs=10.5,bold=True,col='#5D4037')
     for sx,slbl,sc in [(2.95,'\u2460  FD Sketch','#6A1B9A'),
                         (4.55,'\u2461  Eigenspectrum','#E65100'),

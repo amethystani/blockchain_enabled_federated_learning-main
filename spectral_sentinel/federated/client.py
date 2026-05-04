@@ -43,6 +43,11 @@ class Client:
         self.batch_size = batch_size
         self.device = device
         
+        # Differential Privacy parameters
+        self.use_dp = False
+        self.dp_epsilon = 8.0
+        self.dp_clip_norm = 1.0
+        
         # Create data loader
         self.data_loader = create_data_loader(dataset, batch_size, shuffle=True)
         
@@ -134,6 +139,22 @@ class HonestClient(Client):
             k: initial_params[k] - final_params[k]
             for k in initial_params.keys()
         }
+        
+        # Differential Privacy: Clip and add noise
+        if getattr(self, 'use_dp', False):
+            # Calculate total L2 norm
+            total_norm = torch.sqrt(sum(torch.sum(g ** 2) for g in gradient.values()))
+            clip_coef = self.dp_clip_norm / (total_norm + 1e-6)
+            clip_coef_clamped = torch.clamp(clip_coef, max=1.0)
+            
+            # Apply clipping and noise
+            noise_scale = (2.0 * self.dp_clip_norm) / self.dp_epsilon
+            laplace_dist = torch.distributions.Laplace(0, noise_scale)
+            
+            for k in gradient:
+                gradient[k] = gradient[k] * clip_coef_clamped
+                noise = laplace_dist.sample(gradient[k].shape).to(self.device)
+                gradient[k] += noise
         
         return gradient
 

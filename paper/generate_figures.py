@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate research-grade figures for the Spectral Sentinel paper.
+Generate research-grade figures for the our approach paper.
 All figures are designed for Springer LNCS two-column format:
   - Line widths: 1.5–2.5pt
   - Font size: 9–11pt (matches LNCS body text)
@@ -60,7 +60,7 @@ np.random.seed(2026)
 
 # ─── Figure 1: System Architecture ───────────────────────────────────────────
 def fig_system_architecture():
-    """Beautiful detailed Spectral Sentinel ML pipeline diagram."""
+    """Beautiful detailed our approach ML pipeline diagram."""
     from matplotlib.patches import FancyBboxPatch
 
     fig, ax = plt.subplots(figsize=(13, 6.2))
@@ -102,7 +102,7 @@ def fig_system_architecture():
 
     # ── AGGREGATOR BACKGROUND ──────────────────────────────────────────
     fbox(1.95,0.12,7.35,5.75,'bg',lw=2.2,alpha=0.45,rad=0.3,zo=2)
-    txt(5.62,6.0,'Spectral Sentinel \u2014 Byzantine-Robust Aggregator',
+    txt(5.62,6.0,'our approach \u2014 Byzantine-Robust Aggregator',
         fs=10.5,bold=True,col='#5D4037')
     for sx,sl,sc in [(2.95,'(1) FD Sketch','#6A1B9A'),
                       (4.55,'(2) Eigenspectrum','#E65100'),
@@ -524,7 +524,7 @@ def fig_spectral_fingerprints():
 
 # ─── Figure 5: Convergence Rate Comparison ───────────────────────────────────
 def fig_convergence_rate():
-    """Spectral Sentinel convergence rate vs baselines across attack types."""
+    """our approach convergence rate vs baselines across attack types."""
     fig, axes = plt.subplots(1, 2, figsize=(8.5, 3.5))
 
     # Panel A: Accuracy vs rounds for Gaussian attack
@@ -546,7 +546,7 @@ def fig_convergence_rate():
     acc_spectral= acc_trajectory(90.56, 1.5, rounds)
 
     ax.plot(rounds, acc_spectral, color=C['blue'],   lw=2.2, marker='o', ms=4,
-            label='Spectral Sentinel (Ours)')
+            label='our approach (Ours)')
     ax.plot(rounds, acc_median,   color=C['green'],  lw=1.8, marker='s', ms=4,
             label='Median')
     ax.plot(rounds, acc_krum,     color=C['orange'], lw=1.8, marker='^', ms=4,
@@ -565,10 +565,10 @@ def fig_convergence_rate():
     # Panel B: Detection rate across attacks
     ax = axes[1]
     attacks = ['MinMax', 'Label Flip', 'Gaussian']
-    agg_names = ['Spectral Sentinel\n(Ours)', 'FedAvg', 'Krum', 'Median']
+    agg_names = ['our approach\n(Ours)', 'FedAvg', 'Krum', 'Median']
     # Detection rates from actual experiments (Spectral=1.0, others=0.0)
     detect = {
-        'Spectral Sentinel\n(Ours)': [1.00, 1.00, 1.00],
+        'our approach\n(Ours)': [1.00, 1.00, 1.00],
         'FedAvg': [0.00, 0.00, 0.00],
         'Krum':   [0.00, 0.00, 0.00],
         'Median': [0.00, 0.00, 0.00],

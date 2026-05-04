@@ -10,12 +10,14 @@ Expected runtime: ~30 minutes
 
 import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
 
 import torch
 import numpy as np
 import pandas as pd
-from pathlib import Path
 
 from spectral_sentinel.config import Config
 from spectral_sentinel.experiments.simulate_basic import run_experiment

@@ -44,6 +44,11 @@ class Config:
     aggregator: str = "spectral_sentinel"  # spectral_sentinel, fedavg, krum, median, etc.
     clip_threshold: float = 0.15  # Gradient clipping for adaptive attacks
     
+    # Differential Privacy settings
+    use_dp: bool = False
+    dp_epsilon: float = 8.0
+    dp_clip_norm: float = 1.0
+    
     # Phase transition analysis
     sigma_squared_f_squared: Optional[float] = None  # Auto-computed if None
     
