@@ -1,0 +1,35 @@
+\section{Convergence Analysis}
+\label{sec:convergence}
+
+Let $\beta = f/n$ denote the Byzantine fraction.
+
+\begin{theorem}[Convergence Rate]
+\label{thm:convergence}
+Under Assumptions~1--3 with $L$-smooth $F$ and learning rate $\eta = O(1/\sqrt{T})$:
+\begin{equation}
+\min_{t \in [T]}\mathbb{E}[\|\nabla F(w^t)\|^2] \leq O\!\left(\frac{\sigma\beta}{\sqrt{T}} + \frac{\beta^2}{T}\right)
+\end{equation}
+with probability $\geq 1 - \delta$, where $\delta = O(e^{-k/\log^2 k})$ and $\beta = f/n$.
+The matching lower bound $\Omega(\sigma\beta/\sqrt{T})$ follows from a minimax construction
+where $f$ Byzantine clients inject spectrally indistinguishable gradients at the detection
+boundary~\cite{byzantine_ml}.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+\emph{Step 1 (filter correctness).}
+By Theorem~\ref{thm:spectral_anomaly} and $\sigma^2\beta^2 < 0.25$ (Assumption~3),
+the spectral filter excludes all Byzantine clients with probability $\geq 1 - \delta$ per round.
+
+\emph{Step 2 (Non-IID gradient concentration).}
+By Lemma~\ref{lem:noniid}, each honest gradient decomposes as $g_i^t = \bar{g}^t + \Delta_i^t$
+where $\mathbb{E}[\Delta_i^t] = 0$ and $\mathbb{E}[(\Delta_i^t)_j^2] \leq \sigma^2$.
+The filtered mean $\hat{g}^t = \frac{1}{|\mathcal{T}_t|}\sum_{i \in \mathcal{T}_t} g_i^t$
+satisfies $\mathbb{E}[\|\hat{g}^t - \bar{g}^t\|^2] \leq O(\sigma^2\beta^2)$ by
+concentration of i.i.d.-like fluctuations $\{\Delta_i^t\}_{i \in \mathcal{T}_t}$
+via Lemma~\ref{lem:noniid} and the Tao-Vu universality argument~\cite{rmt_modern}.
+
+\emph{Step 3 (SGD descent).}
+For $L$-smooth $F$ and $\eta = O(1/\sqrt{T})$:
+$F(w^{t+1}) \leq F(w^t) - \eta\|\nabla F(w^t)\|^2 + \eta^2(L\sigma^2\beta^2 + L\|\bar{g}^t\|^2)$.
+Telescoping and applying $F \geq F^* > -\infty$ gives the stated rate.
+\end{proof}

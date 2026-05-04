@@ -1,0 +1,32 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented a Byzantine-robust federated learning protocol that provides practical
+stabilization guarantees in the sense of Dijkstra~\cite{dijkstra_self_stab} and
+Dolev~\cite{dolev_self_stab}.
+Under Assumptions~1--4 (synchronous rounds, $f < n/2$ Byzantine clients with
+fraction $\beta = f/n$, honest gradient variance $\sigma^2$, and phase transition
+condition $\sigma^2\beta^2 < 0.25$), the protocol autonomously recovers to a
+legitimate training configuration within
+$T^* = O(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon)$ rounds from any initial
+corrupted state, without external intervention.
+
+The protocol achieves this through a four-stage pipeline: gradient compression via
+Frequent Directions sketching (reducing communication from $O(d)$ to $O(k)$ per round),
+spectral Byzantine filtering via the Marchenko-Pastur law, robust aggregation over the
+trusted client subset, and verifiable distributed checkpointing.
+The blockchain's write-once immutability provides the stabilizing shared memory
+substrate: each legitimately completed round is permanently recorded, enabling monotonic
+progress that cannot be reversed by Byzantine clients.
+A phase transition at $\sigma^2\beta^2 = 0.25$ ($\beta = f/n$) characterizes when spectral
+detection becomes information-theoretically impossible---a new impossibility result for
+Byzantine-robust distributed learning, analogous in spirit (though distinct in mechanism)
+to the FLP impossibility~\cite{flp_impossibility} for consensus.
+
+Empirically, the protocol demonstrates recovery from arbitrary initial states across
+12 attack types, achieving 78.4\% mean accuracy under 40\% Byzantine fraction---a 15
+percentage-point improvement over FLTrust~\cite{crfl}, the strongest baseline in
+this regime.
+The sketching mechanism scales to 345M-parameter models within practical memory budgets.
+
+Open problems include asynchronous self-stabilization, game-theoretic adaptive adversaries (Appendix~\ref{app:game_theory}), tight Non-IID finite-sample concentration bounds, and reducing blockchain overhead at scale.

@@ -1,0 +1,108 @@
+\section{Theoretical Framework}
+\label{sec:theory}
+
+\subsection{Marchenko-Pastur Law for Honest Gradients}
+
+\begin{definition}[Marchenko-Pastur Distribution]
+Let $X \in \mathbb{R}^{n \times d}$ with i.i.d.\ zero-mean variance-$\sigma^2$ entries.
+As $n,d \to \infty$ with $d/n \to \gamma \in (0,\infty)$, the empirical spectral distribution
+of $\frac{1}{n}X^TX$ converges weakly to the \emph{Marchenko-Pastur law} with density:
+\begin{equation}
+\rho(\lambda) = \frac{1}{2\pi\sigma^2\gamma\lambda}
+  \sqrt{(\lambda_+ - \lambda)(\lambda - \lambda_-)},
+  \quad \lambda \in [\lambda_-,\, \lambda_+]
+\end{equation}
+where $\lambda_{\pm} = \sigma^2(1 \pm \sqrt{\gamma})^2$ are the bulk edges.
+\end{definition}
+
+Our core observation is that honest gradients, \emph{even under Non-IID heterogeneous data},
+produce covariance matrices whose bulk eigenspectrum follows the MP law.
+The key technical step is a decomposition lemma:
+
+\begin{lemma}[Non-IID Decomposition]
+\label{lem:noniid}
+Under Assumption~2, each honest gradient decomposes as $g_i^t = \bar{g}^t + \Delta_i^t$,
+where $\bar{g}^t = \frac{1}{|\mathcal{H}|}\sum_{i \in \mathcal{H}} g_i^t$ and
+$\mathbb{E}[\Delta_i^t] = 0$, $\mathbb{E}[(\Delta_i^t)_j^2] \leq \sigma^2$.
+The gradient matrix $G$ then has covariance
+$C = \frac{1}{n}G^TG = \bar{g}(\bar{g})^T + \frac{1}{n}\sum_i \Delta_i^t(\Delta_i^t)^T + R$,
+where $\|R\|_2 \leq 2\|\bar{g}\| \cdot \sigma/\sqrt{n}$ (cross term, vanishes as $n \to \infty$).
+\end{lemma}
+
+The rank-1 term $\bar{g}(\bar{g})^T$ contributes at most one outlier eigenvalue.
+The remaining term $\frac{1}{n}\sum_i \Delta_i(\Delta_i)^T$ has zero-mean entries with
+bounded second moment $\sigma^2$:
+
+\begin{theorem}[MP Law for Honest Gradients]
+\label{thm:mp_honest}
+Under Assumption~2, as $n, d \to \infty$ with $d/n \to \gamma$, the \emph{bulk}
+eigenvalue distribution of $C = \frac{1}{n}G^TG$ converges to the MP distribution
+$\mathrm{MP}(\gamma, \sigma^2)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By Lemma~\ref{lem:noniid}, the bulk spectrum is governed by
+$\frac{1}{n}\sum_i \Delta_i \Delta_i^T$.
+Each $\Delta_i$ has i.i.d.-like coordinate structure (zero mean, bounded variance $\sigma^2$
+coordinate-wise) but not necessarily Gaussian.
+Tao and Vu's universality theorem~\cite{rmt_modern} establishes MP convergence under exactly
+these conditions: bounded first four moments suffice for the limiting spectral distribution
+to equal that of a Gaussian matrix with the same first two moments.
+The rank-1 term $\bar{g}(\bar{g})^T$ creates a single spike eigenvalue above $\lambda_+$
+when $\|\bar{g}\|^2 > \sigma^2 \sqrt{d/n}$ (BBP transition~\cite{bbp_transition}),
+which is absorbed into the spectral filter as a detectable outlier but does not affect
+the bulk convergence.
+Hence the bulk of the empirical spectral distribution converges to MP$(\gamma, \sigma^2)$.
+\end{proof}
+
+\begin{remark}[Non-IID Concentration at Finite $n, d$]
+The asymptotic MP convergence (large $n, d$) implies finite-sample concentration
+at rate $O(1/\sqrt{\min(n,d)})$ by standard matrix concentration inequalities~\cite{rmt_modern}.
+For our experimental setup ($n \geq 32$, $d \geq 22 \times 10^6$), the bulk is well-concentrated,
+and the KS detection test calibrated against the fitted MP distribution is empirically validated
+in the experiments (Section~\ref{sec:experiments}).
+\end{remark}
+
+\subsection{Byzantine Perturbations Create Spectral Anomalies}
+
+\begin{theorem}[Spectral Anomaly Detection]
+\label{thm:spectral_anomaly}
+Let $f$ Byzantine clients inject arbitrary gradients, yielding perturbed matrix
+$\tilde{G} = G + E$ where $E$ has $f$ non-zero rows.
+If the Byzantine attack creates a rank-$f$ perturbation of magnitude
+$\|\delta_{\mathrm{byz}}\| > \sigma\sqrt{d/n}$, then the eigenvalue spectrum of
+$\tilde{C} = \frac{1}{n}\tilde{G}^T\tilde{G}$ exhibits $f$ outlier eigenvalues above
+$\lambda_+$ with probability $\geq 1 - e^{-k/\log^2 k}$ for sketch size $k \geq \Omega(\log d)$.
+\end{theorem}
+
+\begin{proof}
+The Byzantine perturbation yields
+$\tilde{C} = C + \frac{1}{n}(G^TE + E^TG) + \frac{1}{n}E^TE$.
+The rank-$f$ term $\frac{1}{n}E^TE$ contributes $f$ eigenvalues.
+By the BBP phase transition~\cite{bbp_transition}: a rank-$r$ perturbation of magnitude
+$\tau > \sigma^2\sqrt{n/d}$ produces $r$ eigenvalue spikes above $\lambda_+$.
+The perturbation term $\frac{1}{n}G^TE$ adds $O(\sigma\|\delta_{\mathrm{byz}}\|/\sqrt{n})$
+to the spectral norm, which is dominated by the rank-$f$ spike when
+$\|\delta_{\mathrm{byz}}\| > \sigma\sqrt{d/n}$.
+KS testing against the fitted MP distribution detects these outliers with the stated
+probability by sub-Gaussian concentration of the empirical spectral distribution.
+\end{proof}
+
+\subsection{Phase Transition Characterization}
+
+\begin{theorem}[Detection Phase Transition]
+\label{thm:phase_transition_det}
+Let $\beta = f/n$ be the Byzantine fraction.
+For any Byzantine detection algorithm using only gradient information:
+\emph{(i)} \emph{Below} $\sigma^2\beta^2 < 0.25$: detection succeeds with probability $> 1 - \delta$
+(Theorem~\ref{thm:spectral_anomaly});
+\emph{(ii)} \emph{Above} $\sigma^2\beta^2 \geq 0.25$: no algorithm can reliably distinguish
+Byzantine from honest gradients (Theorem~\ref{thm:phase_impossibility}).
+\end{theorem}
+
+The threshold $\sigma^2\beta^2 = 0.25$ arises from the BBP
+transition~\cite{bbp_transition}: a rank-$f$ perturbation with $\beta = f/n$ Byzantine fraction
+exits the MP bulk if and only if its normalized magnitude exceeds $\sigma^2\sqrt{n/d}$,
+which in the federated gradient setting yields the product condition $\sigma^2\beta^2 < 1/4$.
+Equivalently, $\sigma\beta < 1/2$: the honest gradient noise amplitude must exceed twice
+the Byzantine signal amplitude for detection to be information-theoretically feasible.

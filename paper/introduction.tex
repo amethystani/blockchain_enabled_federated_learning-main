@@ -1,0 +1,49 @@
+\section{Introduction}
+
+Federated Learning (FL) is a distributed computing paradigm where $n$ processes collaboratively minimize a global objective $F(w)$ without exchanging raw data. The decentralized nature of FL aligns with blockchain technology, enabling trustless aggregation through immutable distributed ledgers. A fundamental challenge arises when $f < n/2$ processes are \emph{Byzantine}~\cite{byzantine_generals}: they may submit arbitrary gradient updates, corrupting the global model.
+
+We study this as a \emph{self-stabilization} problem in the sense of Dijkstra~\cite{dijkstra_self_stab}: can the system recover from an \emph{arbitrary} initial model state---including complete adversarial corruption---and maintain a \emph{legitimate configuration} (all Byzantine nodes identified, honest gradient correctly aggregated) indefinitely? Prior Byzantine-robust FL methods guarantee convergence from a \emph{known-good} initialization but offer no recovery from catastrophic corruption; they are robust but \emph{not} self-stabilizing.
+
+The self-stabilizing Byzantine robust aggregation problem requires: given $n$ processes where $f < n/2$ are Byzantine, and honest process $i$ submits $g_i \in \mathbb{R}^d$, compute $\hat{g}$ satisfying:
+\begin{equation}
+\min_{t \leq T}\mathbb{E}[\|\nabla F(w^t)\|^2] \leq O\left(\frac{\sigma\beta}{\sqrt{T}} + \frac{\beta^2}{T}\right)
+\end{equation}
+starting from \emph{any} initial $w^0 \in \mathbb{R}^d$, where $\beta = f/n$ and $\sigma^2$ bounds coordinate-wise variance of honest gradients. This is strictly harder than standard convergence: it requires both fault tolerance \emph{and} global recovery.
+
+Existing Byzantine-robust methods face fundamental barriers. Geometric median requires $O(n^2 d)$ communication. Krum and Bulyan reject valid Non-IID updates. Certified defenses (CRFL, ByzShield) assume bounded perturbations but cannot handle arbitrary corruption. Critically, \emph{none} provide self-stabilization guarantees. While other robust FL paradigms like CORNFLQS~\cite{cornflqs} address natural structural heterogeneity such as quantity skew in clustered settings, they do not consider malicious Byzantine adversaries or the problem of self-stabilization from catastrophic failure.
+
+This paper introduces a Byzantine-robust FL protocol proven self-stabilizing in Dijkstra's framework. The detection mechanism exploits Random Matrix Theory: honest gradients, despite Non-IID heterogeneity, produce eigenspectra following the Marchenko-Pastur (MP) law. Byzantine perturbations create detectable spectral anomalies. The blockchain provides the self-stabilizing \emph{shared memory} substrate: write-once immutability ensures legitimate rounds are permanently recorded, analogous to Dijkstra's shared registers but with Byzantine (not just crash) fault tolerance.
+
+\subsection{Contributions}
+
+The contributions of this work are fivefold:
+
+\textbf{1. Practical Self-Stabilization (distributed systems):} We provide a formal
+recovery argument showing our protocol is \emph{practically self-stabilizing} in the
+tradition of Dijkstra~\cite{dijkstra_self_stab}: from any initial state, the protocol
+reaches a legitimate configuration within $T^* = O(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon)$
+rounds ($\beta = f/n$), with closure, under Assumptions~1--4 (Section~\ref{sec:self_stabilization}).
+We also establish an impossibility at $\sigma^2\beta^2 \geq 0.25$
+(Theorem~\ref{thm:phase_impossibility}).
+
+\textbf{2. Blockchain as Stabilizing Shared Memory:} We formalize the blockchain as a
+distributed shared-memory substrate with strictly stronger properties than classical
+shared registers~\cite{dijkstra_self_stab}: Byzantine fault tolerance ($f < n/2$
+arbitrary faults vs.\ crash-only), write-once immutability, and permanent history---enabling
+a stabilizing foundation for the federated training protocol under the Byzantine fault
+model (Section~\ref{sec:blockchain}).
+
+\textbf{3. Detection Threshold from RMT:} We derive a spectral detection threshold from
+the Marchenko-Pastur law and the BBP phase transition~\cite{bbp_transition}, establishing
+a convergence rate $O(\sigma\beta/\sqrt{T} + \beta^2/T)$ with a matching lower bound
+$\Omega(\sigma\beta/\sqrt{T})$ (Sections~\ref{sec:theory}--\ref{sec:convergence}).
+
+\textbf{4. Scalable Spectral Algorithm:} We combine KS testing against the MP distribution
+with layer-wise Frequent Directions sketching~\cite{frequent_directions}, reducing memory
+from $O(d^2)$ to $O(k^2)$ and enabling deployment on 345M-parameter models
+(Section~\ref{sec:algorithm}).
+
+\textbf{5. Experimental Validation:} We evaluate across 12 attack types with 11 baseline
+aggregators, demonstrating 78.4\% mean accuracy at 40\% Byzantine fraction versus 48--63\%
+for baselines, with Byzantine detection rates exceeding 96\% below the phase transition
+boundary (Section~\ref{sec:experiments}).

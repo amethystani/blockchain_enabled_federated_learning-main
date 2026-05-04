@@ -1,0 +1,74 @@
+\section{System Model and Problem Formulation}
+\label{sec:system_model}
+
+\subsection{Distributed Learning Setup}
+
+We consider a federated learning system with $n$ clients, where client $i \in [n]$ holds local dataset $\mathcal{D}_i$. The global objective is:
+\begin{equation}
+F(w) = \frac{1}{n}\sum_{i=1}^n F_i(w),\quad F_i(w) = \mathbb{E}_{z \sim \mathcal{D}_i}[\ell(w;z)]
+\end{equation}
+
+At each round $t \in [T]$, the aggregator broadcasts $w^t$. Each honest client $i$ computes:
+$g_i^t = \nabla F_i(w^t) + \xi_i^t$,
+where $\xi_i^t$ is stochastic noise with coordinate-wise variance $\mathbb{E}[(\xi_i^t)_j^2] \leq \sigma^2$.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{flowdiag.jpeg}
+\caption{System architecture. Honest and Byzantine clients submit gradients; the aggregator performs spectral detection via the Marchenko-Pastur test; the result is committed on-chain. The blockchain's write-once immutability provides the self-stabilizing shared memory substrate.}
+\label{fig:architecture}
+\end{figure}
+
+\subsection{Formal Distributed System Model}
+\label{sec:dist_model}
+
+We model the system as a synchronous message-passing distributed system~\cite{byzantine_generals}.
+
+\smallskip\noindent\textbf{Processes.} $n$ processes $\mathcal{P} = \{p_1,\ldots,p_n\}$: one coordinator (aggregator) and $n-1$ clients. Each process has local state $w^t \in \mathbb{R}^d$.
+
+\smallskip\noindent\textbf{Execution.} Round $t$: (1) coordinator broadcasts $w^t$; (2) each client sends $g_i^t$; (3) coordinator aggregates to produce $w^{t+1}$; (4) aggregated hash committed to the blockchain.
+
+\smallskip\noindent\textbf{Configurations.} $C = (w, \mathcal{B})$: model parameters and Byzantine set $\mathcal{B} \subseteq \mathcal{P}$, $|\mathcal{B}| = f$.
+
+\subsection{Threat Model and Assumptions}
+\label{sec:threat_model}
+
+\noindent\textbf{Assumption~1 (Byzantine Fault Model).}
+At most $f < n/2$ processes are Byzantine: they may send any $g_i^t \in \mathbb{R}^d$,
+collude, and know the aggregation algorithm, but cannot break cryptographic primitives.
+
+\noindent\textbf{Assumption~2 (Honest Gradient Variance).}
+Each honest client $i \in \mathcal{H}$ computes $g_i^t = \nabla F_i(w^t) + \xi_i^t$
+with $\mathbb{E}[(\xi_i^t)_j^2] \leq \sigma^2$ coordinate-wise.
+
+\noindent\textbf{Assumption~3 (Phase Transition Condition).}
+Let $\beta = f/n \in (0, \tfrac{1}{2})$ denote the Byzantine fraction.
+We require $\sigma^2\beta^2 < 0.25$, equivalently $\sigma\beta < \tfrac{1}{2}$.
+This necessary condition ensures Byzantine gradients create
+detectable spectral anomalies (Theorem~\ref{thm:phase_impossibility});
+the matching impossibility shows the condition cannot be relaxed.
+
+\noindent\textbf{Assumption~4 (Blockchain Liveness).}
+The blockchain finalizes honest transactions with at most $\lfloor(m-1)/3\rfloor$ faulty
+validators out of $m$ (PBFT assumption~\cite{bft_consensus}).
+
+\noindent\textbf{Assumption~5 (Transient Faults).}
+Byzantine behavior may occur at any round including round~0.
+This is the standard self-stabilization assumption~\cite{dijkstra_self_stab}.
+
+\smallskip\noindent\textbf{Attack taxonomy.}
+Byzantine clients in our experiments include: MinMax~\cite{fl_poisoning}, Gaussian noise,
+label-flip, ALIE~\cite{alie_attack}, sign-flip, and zero-gradient (free-riding)---covering
+both targeted and untargeted attacks (full 12-attack evaluation in Section~\ref{sec:experiments}).
+
+\subsection{Protocol Properties}
+\label{sec:properties}
+
+\noindent\textbf{Safety.} $\mathbb{E}[\|\hat{g}^t - \bar{g}^t\|^2] \leq O(\sigma^2\beta^2)$ in every round, where $\beta = f/n$.
+
+\noindent\textbf{Liveness.} $\min_{t \in [T]}\mathbb{E}[\|\nabla F(w^t)\|^2] \leq O(\sigma\beta/\sqrt{T} + \beta^2/T)$
+provided $f < n/2$ and $\sigma^2\beta^2 < 0.25$.
+
+\noindent\textbf{Practical Stabilization.} Starting from any $w^0 \in \mathbb{R}^d$, the protocol reaches
+a legitimate configuration (Definition~\ref{def:legit}) within
+$T^* = O(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon)$ rounds (Theorem~\ref{thm:self_stab}).

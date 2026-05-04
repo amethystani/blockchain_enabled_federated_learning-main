@@ -1,0 +1,84 @@
+%% Springer LNCS format
+\documentclass[runningheads]{llncs}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{enumerate}
+\usepackage{booktabs}
+\usepackage{cite}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\graphicspath{{figures/}}
+% LNCS already defines: theorem, lemma, corollary, proposition, definition, remark, proof
+% No additional theorem declarations needed
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\begin{document}
+
+\title{Practically Stabilizing Byzantine-Robust Federated Learning via Spectral Filtering}
+
+%% Anonymized for double-blind review (SSS 2026)
+\author{Anonymous Author(s)}
+\authorrunning{Anon.}
+\institute{Institution withheld for review}
+
+\maketitle
+
+\begin{abstract}
+Can a federated learning system autonomously recover from complete adversarial
+corruption---with no external intervention, no trusted initialization, and no bound
+on how badly Byzantine clients have disrupted training?
+We answer affirmatively by recasting federated learning as a self-stabilization problem
+in the sense of Dijkstra~\cite{dijkstra_self_stab}, and presenting the first
+\emph{practically stabilizing} federated learning protocol with a formal recovery time bound.
+
+Our protocol uses three components that compose into a stabilizing system: clients
+compress local gradients into streaming sketches; the server applies a spectral filter
+based on the Marchenko-Pastur (MP) law of random matrix theory to expel Byzantine
+gradient directions; and each round's result is committed to a distributed ledger
+whose write-once immutability under BFT consensus serves as the Byzantine-fault-tolerant
+analog of Dijkstra's stabilizing shared memory.
+Starting from any model $w^0 \in \mathbb{R}^d$, the protocol reaches a legitimate
+configuration within $T^* = O(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon)$ rounds,
+where $f < n/2$ Byzantine clients have fraction $\beta = f/n$ and $\sigma^2\beta^2 < 0.25$
+is a necessary phase-transition condition.
+A matching impossibility result shows that when $\sigma^2\beta^2 \geq 0.25$, no
+gradient-based spectral detection algorithm can self-stabilize---characterizing a
+fundamental limit analogous in spirit to the FLP impossibility~\cite{flp_impossibility}.
+Layer-wise sketching reduces memory from $O(d^2)$ to $O(k^2)$, enabling 345M-parameter
+models.
+Experiments across 12 attack types show 78.4\% mean accuracy at 40\% Byzantine fraction
+versus 48--63\% for established baselines~\cite{krum,byzantine_ml,crfl,flame},
+with Byzantine detection exceeding 96\% below the phase transition boundary.
+\end{abstract}
+
+\keywords{Self-Stabilization \and Byzantine Fault Tolerance \and Federated Learning \and Random Matrix Theory \and Blockchain \and Marchenko-Pastur Law}
+
+% ----------------------------------------------------------------
+\input{introduction}
+\input{related_work}
+\input{system_model}
+\input{theory}
+\input{algorithm}
+\input{convergence}
+\input{blockchain}
+\input{experiments}
+\input{self_stabilization}
+\input{limitations}
+\input{conclusion}
+% ----------------------------------------------------------------
+
+\input{bibliography}
+
+\appendix
+\input{supplementary}
+
+\end{document}

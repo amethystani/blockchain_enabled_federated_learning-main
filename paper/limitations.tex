@@ -1,0 +1,7 @@
+\section{Limitations}
+\label{sec:limitations}
+
+\textbf{Phase transition.} Spectral detection fails at $\sigma^2\beta^2 \geq 0.25$; trusted validation sets or DP may extend the regime (Appendix~\ref{app:game_theory}).
+\textbf{Sketching error.} $O(1/\sqrt{k})$ requires $k \geq 256$ (${\approx}890$\,MB for 345M-parameter models).
+\textbf{Coordinated low-rank attacks.} Block-targeted perturbations reduce detection to 73.2\%; cross-layer checks mitigate this.
+\textbf{Asynchrony.} $\tau_{\max} > 20$ rounds degrades detection; extending to dynamic Byzantine membership~\cite{dolev_survey} and full asynchrony remain future work.

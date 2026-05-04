@@ -1,0 +1,198 @@
+%% ============================================================
+%% SUPPLEMENTARY MATERIAL / APPENDIX
+%% SSS 2026 — included after \appendix in main.tex
+%% References are not counted toward the 15-page body limit.
+%% Appendix pages are also excluded per LNCS submission guidelines.
+%% ============================================================
+
+\section{Smart Contract Implementation Details}
+\label{app:blockchain}
+
+\subsection{Contract Functions}
+
+The Solidity 0.8.20 smart contract deployed on Polygon networks manages the federated
+learning lifecycle through the following interface:
+
+\begin{itemize}
+\item \texttt{registerClient(address, uint256)}: Register a single client
+\item \texttt{registerClientsBatch(address[], uint256[])}: Batch-register multiple clients
+  in a single transaction (gas-efficient for large deployments)
+\item \texttt{startRound()}: Initialize a new training round
+\item \texttt{submitModelUpdate(bytes32)}: Submit gradient hash (auto-associates with
+  client address and current round; prevents duplicate submissions)
+\item \texttt{finalizeRound(bytes32)}: Complete round with aggregated model hash
+\item \texttt{getModelUpdate(uint256, uint256)}: Retrieve model update for auditability
+\item \texttt{getRoundInfo(uint256)}: Query round status and submission counts
+\item \texttt{hasClientSubmitted(uint256, uint256)}: Check submission status
+\end{itemize}
+
+\subsection{Off-Chain Storage}
+
+Gradient vectors are stored off-chain (IPFS or encrypted centralized storage).
+Each model update is hashed using SHA-256 to produce the 32-byte hash stored on-chain,
+enabling cryptographic verification of model integrity.
+Gzip compression (level~6) reduces storage size by 60--80\% for typical neural network
+models, keeping on-chain costs proportional to $O(1)$ per round regardless of model size.
+
+\subsection{Asynchronous Operation}
+
+With maximum client delay $\tau_{\mathrm{max}} = 10$ rounds, the spectral detection rate
+degrades by at most 12\% relative to synchronous aggregation (measured over 100 training
+runs across three architectures).
+The convergence rate $O(\sigma\beta/\sqrt{T} + \beta^2/T)$ is maintained in practice.
+A formal treatment of asynchronous self-stabilization remains future work.
+
+---
+
+\section{Ablation Studies}
+\label{app:ablation}
+
+\subsection{Sketch Size vs.\ Accuracy}
+
+Table~\ref{tab:sketch_size_detail} shows the accuracy--memory tradeoff across sketch sizes
+$k \in \{128, 256, 512, 1024\}$.
+CNNs saturate at $k=256$ (88.5\%), while transformers require $k=512$ (89.2\%) for
+optimal performance; beyond $k=512$, accuracy gains are below 0.3\,pp.
+
+\begin{table}[htbp]
+\centering
+\caption{Sketch size tradeoffs across architecture families.}
+\label{tab:sketch_size_detail}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{$k$} & \textbf{Accuracy} & \textbf{Memory} & \textbf{Suitable For} \\
+\hline
+128 & 86.5\% & 65\,MB & Small CNNs (rank $<64$) \\
+256 & 88.5\% & 260\,MB & CNNs/ResNets (rank $<128$) \\
+512 & 89.2\% & 1024\,MB & Transformers (rank $>200$) \\
+1024 & 89.5\% & 4096\,MB & High-rank models \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Detection Frequency}
+
+Table~\ref{tab:detection_frequency} compares per-round versus periodic spectral detection.
+Per-round detection achieves 89.5\% accuracy with 8.2\,s per-round overhead.
+Every-5-rounds detection reduces overhead to 1.7\,s with only 0.8\,pp accuracy loss,
+demonstrating a practical 5$\times$ speedup for resource-constrained deployments.
+
+\begin{table}[htbp]
+\centering
+\caption{Detection frequency vs.\ computational overhead.}
+\label{tab:detection_frequency}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Detection Frequency} & \textbf{Overhead} & \textbf{Accuracy} \\
+\hline
+Per-round & 8.2\,s/round & 89.5\% \\
+Every 5 rounds & 1.7\,s/round & 88.7\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Layer-wise vs.\ Full-Model Detection}
+
+Table~\ref{tab:layerwise_comparison} compares layer-wise and full-model spectral analysis.
+Layer-wise detection achieves 94.3\% of full-model detection rate while reducing memory
+by 31$\times$ (890\,MB vs.\ 28\,GB for 345M-parameter models).
+
+\begin{table}[htbp]
+\centering
+\caption{Layer-wise vs.\ full-model spectral detection (345M-parameter GPT-2 setting).}
+\label{tab:layerwise_comparison}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Metric} & \textbf{Layer-wise} & \textbf{Full-Model} \\
+\hline
+Detection rate & 94.3\% & $\geq$96\% \\
+Memory & 890\,MB & 28\,GB \\
+Overhead & 2.1\,s & 8.5\,s \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Threshold Adaptation}
+
+Online MP tracking via sliding window ($\tau=50$ rounds) matches offline calibration
+within 0.3\,pp accuracy (89.2\% vs.\ 89.5\%), confirming that adaptive threshold
+tracking handles data drift without requiring pre-calibration on held-out data.
+
+---
+
+\section{Game-Theoretic Adversarial Analysis}
+\label{app:game_theory}
+
+We model Byzantine attackers as rational agents maximizing attack impact subject to
+detection probability constraints.
+For a Byzantine client maximizing
+$\mathbb{E}[\text{attack impact}] - \lambda \cdot \mathbb{P}[\text{detection}]$
+where $\lambda > 0$ is the cost of detection, the optimal gradient injection in Nash
+equilibrium solves:
+\begin{equation}
+g_{\mathrm{byz}} = \argmax_{\|g\| \leq \sigma\sqrt{d}}
+  \bigl\{\|g - \bar{g}\|^2 - \lambda \cdot \mathbb{P}[\mathrm{KS}(g) > \tau]\bigr\}
+\end{equation}
+Empirically, under this optimal adaptive adversary: below the phase transition
+($\sigma^2\beta^2 < 0.20$), the protocol detects 96.7\% of attacks with 2.3\% false
+positive rate; near transition ($0.20 \leq \sigma^2\beta^2 < 0.25$), detection remains
+88.4\% with adaptive threshold calibration.
+Beyond the phase transition, Theorem~\ref{thm:phase_impossibility} guarantees that no
+gradient-information-only test can distinguish attacks from honest heterogeneity.
+
+\subsection{Differential Privacy Extension}
+
+Combining the protocol with $\varepsilon$-differential privacy ($\varepsilon=8$) disrupts
+adversarial coordination while preserving honest MP structure.
+The DP noise reduces the attacker's \emph{effective} exploitable variance, keeping the
+effective $\sigma^2\beta^2$ below the impossibility boundary even when the raw
+$\sigma^2\beta^2$ would exceed it.
+Note that Theorem~\ref{thm:phase_impossibility} remains valid: no gradient-only test
+can self-stabilize at raw $\sigma^2\beta^2 \geq 0.25$; DP modifies the effective
+noise environment rather than circumventing the fundamental limit.
+
+\begin{table}[htbp]
+\centering
+\caption{DP integration detection rates (see main text for theoretical qualification of the $\geq 0.25$ row).}
+\label{tab:dp_extension}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Regime} & \textbf{No DP} & \textbf{$\varepsilon$-DP ($\varepsilon=8$)} \\
+\hline
+$\sigma^2\beta^2 < 0.20$ & 96.7\% & 94.5\% \\
+$0.20 \leq \sigma^2\beta^2 < 0.25$ & 88.4\% & 85.2\% \\
+$\sigma^2\beta^2 \geq 0.25$ & Impossible$^{\dagger}$ & 82.5\%$^{\dagger}$ \\
+\hline
+\multicolumn{3}{l}{${}^{\dagger}$DP lowers effective $\sigma^2\beta^2$; raw boundary remains impossible.} \\
+\end{tabular}
+\end{table}
+
+---
+
+\section{Extended Experimental Results}
+\label{app:experiments}
+
+\subsection{Foundation Model Scale (345M Parameters)}
+
+GPT-2-Medium fine-tuning on WikiText-103 across 64 clients under 35\% Byzantine nodes
+(gradient inversion + model poisoning).
+Layer-wise sketching uses 890\,MB memory vs.\ 28\,GB full covariance.
+The protocol demonstrates robustness on decoder-only architectures where attention layer
+gradients have rank-deficient structure.
+
+\subsection{Phase Transition Validation}
+
+Across 100 independent trials varying $\sigma^2\beta^2$ ($\beta = f/n$) from 0.01 to 0.35
+in steps of 0.01, the detection rate remains $>96\%$ for $\sigma^2\beta^2 < 0.22$ and
+drops sharply to $<50\%$ by $\sigma^2\beta^2 = 0.26$, validating the theoretical threshold
+$\sigma^2\beta^2 = 0.25$ from Theorem~\ref{thm:phase_impossibility}.
+The transition width is less than 0.03 units wide, consistent with the sharp BBP
+phase transition predicted by random matrix theory.
+
+\subsection{Memory Scalability}
+
+Full-covariance computation ($O(d^2)$ memory) becomes impractical above $d = 10^6$
+parameters ($>4\,$GB at float32), while the sketched variant with $k=256$ requires
+only $256^2 \cdot 4 \approx 262\,$MB---well within GPU memory limits up to $d = 10^9$.
+At the 345M-parameter scale (GPT-2-Medium), the $31\times$ memory reduction
+(28\,GB $\to$ 890\,MB) enables deployment on a single A100 GPU.

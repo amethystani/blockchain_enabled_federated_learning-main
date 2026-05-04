@@ -1,0 +1,57 @@
+\section{Related Work}
+\label{sec:related}
+
+\subsection{Self-Stabilization in Distributed Systems}
+
+Self-stabilization, introduced by Dijkstra~\cite{dijkstra_self_stab} and formalized
+by Dolev~\cite{dolev_self_stab}, enables a distributed system to recover from any
+transient fault within bounded steps without external intervention.
+Classical results cover mutual exclusion, spanning trees, and clock synchronization under
+crash faults.
+Recent SSS proceedings extend the framework to adversarial and data-driven settings:
+Chen, Lin, and Arora~\cite{sss_ml_routing} use ML predictions to improve the stabilization
+time of a near-shortest-path routing protocol---a direct precedent for
+learning-augmented self-stabilization.
+Jobic et al.~\cite{sss_fl_leakage} analyze label leakage in federated learning using
+cryptographic tools with formal security definitions.
+Our work applies the stabilization framework to federated learning under Byzantine
+(not crash) faults---qualitatively harder because Byzantine processes may deviate
+arbitrarily rather than fail silently.
+
+\subsection{Byzantine Fault Tolerance}
+
+Byzantine fault tolerance~\cite{byzantine_generals} establishes that $f < n/3$ Byzantine
+faults are tolerable in synchronous consensus; Castro and Liskov~\cite{bft_consensus}
+extend this to partially synchronous systems.
+The FLP impossibility~\cite{flp_impossibility} shows consensus is impossible with one
+crash fault in asynchronous systems.
+Recent SSS work examines Byzantine reliable broadcast~\cite{sss_byz_broadcast,sss_byz_counter}
+and Byzantine-resilient blockchain sharding~\cite{sss_blockchain_sharding}.
+Our protocol operates in the synchronous round model with $f < n/2$---weaker than the
+$n/3$ BFT bound, enabled by our server architecture.
+
+\subsection{Byzantine-Robust Federated Learning}
+
+Krum~\cite{krum} selects gradients by nearest-neighbor distance but degrades under
+Non-IID data~\cite{non_iid_challenges}.
+Coordinate-wise robust statistics~\cite{byzantine_ml} reduce to $O(nd)$ computation
+but are sensitive to gradient variance heterogeneity.
+Bulyan~\cite{bulyan} iteratively filters outliers; FLTrust~\cite{crfl} uses a trusted
+root dataset; FLAME~\cite{flame} targets backdoors via clustering; ByzShield~\cite{byzshield}
+provides resilience via redundant training.
+None specifies a formal recovery time or fault-containment invariant in the sense
+of~\cite{dolev_self_stab}---motivating this work.
+
+\subsection{Spectral Methods, RMT, and Blockchain FL}
+
+The BBP phase transition~\cite{bbp_transition} characterizes when a rank-$f$ perturbation
+creates eigenvalue outliers above the MP bulk edge---the mechanism underlying our detection
+threshold.
+Gradient covariance matrices of neural networks follow limiting spectral
+distributions~\cite{rmt_gradients,rmt_neural,spectral_analysis}.
+To our knowledge, we are the first to exploit the MP law~\cite{mp_law} for Byzantine
+gradient identification with a formally scoped detection threshold connected to the BBP
+phase transition.
+Blockchain integration in FL~\cite{blockchain_fl,blockchain_smart} has focused on
+auditability; we instead formalize the ledger as a self-stabilizing shared memory
+substrate with Byzantine fault tolerance strictly stronger than classical shared registers.

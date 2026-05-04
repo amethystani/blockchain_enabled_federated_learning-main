@@ -1,0 +1,49 @@
+\section{Blockchain Integration Architecture}
+\label{sec:blockchain}
+
+\subsection{Distributed Systems Property}
+
+\paragraph{Why the blockchain is structurally necessary.}
+Classical self-stabilization~\cite{dijkstra_self_stab,dolev_self_stab} requires a
+\emph{stabilizing medium}: shared registers that processes can read and write to
+coordinate recovery.
+Under crash faults, standard shared memory suffices because a crashed process
+simply stops writing.
+Under Byzantine faults (Assumption~1), however, a faulty process can write
+\emph{arbitrary} values to any shared register, corrupting the stabilizing medium
+itself and breaking the monotonic progress argument.
+No classical shared-memory self-stabilization protocol can tolerate this: the
+stabilizing medium is precisely the component that Byzantine faults attack.
+
+The blockchain resolves this gap structurally.
+The $n$ FL clients (Assumption~1) and the $m$ blockchain validators (Assumption~4) are
+\emph{distinct} populations: FL clients tolerate $f < n/2$ Byzantine faults; validators
+tolerate a separate budget of $f_v < m/3$ faulty validators (PBFT~\cite{bft_consensus}).
+Once a training round $t$ is finalized, the committed model hash
+$\mathrm{ckpt}_t = H(w_{t+1} \| t \| |\mathcal{T}_t|)$ cannot be altered or erased.
+This is not ``outsourcing'' self-stabilization to the blockchain---it is applying
+BFT consensus as the Byzantine-fault-tolerant analog of Dijkstra's shared registers.
+The write-once semantic enables the monotonic progress argument in
+Lemma~\ref{lem:closure}: each legitimately completed round advances the training
+trajectory permanently, and Byzantine clients cannot force state regression.
+Table~\ref{tab:blockchain_vs_shmem} (Section~\ref{sec:self_stabilization}) formalizes
+this comparison.
+
+\subsection{Round Structure}
+
+Each training round proceeds as follows: (1) coordinator broadcasts $w^t$; (2) each
+client computes sketch $S_i^t$ and submits its gradient hash to the smart contract via
+\texttt{submitModelUpdate}; (3) coordinator waits for $|\mathcal{H}|$ submissions and
+applies spectral filtering; (4) the aggregated model hash is written on-chain via
+\texttt{finalizeRound}, committing round $t$ immutably.
+Full smart contract interface specification is in Appendix~\ref{app:blockchain}.
+
+\paragraph{Asynchronous operation.}
+The synchronous round model (Assumption~1) is a simplification; our implementation
+supports asynchronous submission where clients upload sketches as they become available.
+Empirically, with maximum client delay $\tau_{\mathrm{max}} = 10$ rounds, the spectral
+detection rate degrades by at most 12\% relative to synchronous aggregation (measured
+over 100 training runs across three architectures), and the convergence rate
+$O(\sigma\beta/\sqrt{T} + \beta^2/T)$ (where $\beta = f/n$) is maintained in practice.
+A formal treatment of asynchronous self-stabilization under bounded delay remains
+future work (see Section~\ref{sec:conclusion}).
