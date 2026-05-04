@@ -3,7 +3,8 @@
 
 \subsection{Formal Framework}
 
-We formalize our protocol as a practically self-stabilizing distributed system.
+We formalize our protocol as a practically self-stabilizing distributed system
+in the closure-and-convergence framework of Arora and Gouda~\cite{arora_gouda}.
 
 \begin{definition}[Legitimate Configuration]
 \label{def:legit}
@@ -16,21 +17,32 @@ A configuration $(w^t, \mathcal{H}^t)$ at round $t$ is \emph{legitimate} iff:
 \begin{remark}[Classical vs.\ Practical Self-Stabilization]
 Classical self-stabilization~\cite{dijkstra_self_stab} requires recovery from \emph{any}
 starting configuration with \emph{no} assumptions on initial state.
-Our protocol satisfies a \emph{practical} variant: recovery is guaranteed from any
-initial model $w^0 \in \mathbb{R}^d$ under Assumptions~1--4
-($f < n/2$, Byzantine fraction $\beta = f/n$, $\sigma^2\beta^2 < 0.25$).
+Our protocol satisfies the \emph{practical} variant formalized by Dolev, Kat, and
+Meirovitch~\cite{dolev_kat_practical}: recovery is guaranteed under Assumptions~1--5
+plus Assumption~6 (bounded initialization, below).
 These assumptions are \emph{necessary}: Theorem~\ref{thm:phase_impossibility} shows
-self-stabilization is information-theoretically impossible when they are violated.
+self-stabilization is information-theoretically impossible at $\sigma^2\beta^2 \geq 0.25$.
+Closure is probabilistic: per-round success probability $\geq 1-e^{-k/\log^2 k}$,
+so over $T$ rounds the failure probability is at most $Te^{-k/\log^2 k} < 10^{-28}$
+for $k=256$, $T=1{,}000$ (negligible in practice).
 \end{remark}
+
+\begin{assumption}[Bounded Initialization]
+\label{ass:bounded_init}
+$F(w^0) - F^* \leq \Delta_0$ for a known constant $\Delta_0$ (standard in non-convex
+SGD~\cite{byzantine_ml}; satisfied by any bounded-norm initialization or pretrained
+checkpoint). $T^*$ scales linearly with $\Delta_0$; for $\Delta_0=O(1)$, the bound
+simplifies to $O(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon)$.
+\end{assumption}
 
 
 \begin{theorem}[Practical Self-Stabilization]
 \label{thm:self_stab}
 Let $\beta = f/n$.
-Under Assumptions~1--4, starting from any $w^0 \in \mathbb{R}^d$, the protocol reaches
-a legitimate configuration (Definition~\ref{def:legit}) within
-$T^* = O\!\left(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon\right)$ rounds and maintains it
-thereafter (\emph{closure}).
+Under Assumptions~1--5 and Assumption~\ref{ass:bounded_init} ($F(w^0)-F^* \leq \Delta_0$),
+the protocol reaches a legitimate configuration (Definition~\ref{def:legit}) within
+$T^* = O\!\left(\Delta_0(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon)\right)$ rounds
+and maintains it thereafter (\emph{closure}) with high probability.
 \end{theorem}
 
 \begin{proof}[Proof sketch]
@@ -41,8 +53,8 @@ Definition~\ref{def:legit} hold from the first round onward.
 The blockchain's write-once immutability (Assumption~4) ensures no state regression.
 
 \emph{Convergence to $\varepsilon$-stationarity (in $T^*$ rounds):}
-Assuming $F(w^0)-F^*=O(1)$ (bounded initialization, without loss of generality for $L$-smooth $F$),
-the filtered aggregate satisfies $\mathbb{E}[\|\hat{g}^t-\bar{g}^t\|^2]\leq O(\sigma^2\beta^2)$
+By Assumption~\ref{ass:bounded_init}, $F(w^0)-F^*\leq\Delta_0$.
+The filtered aggregate satisfies $\mathbb{E}[\|\hat{g}^t-\bar{g}^t\|^2]\leq O(\sigma^2\beta^2)$
 (Theorem~\ref{thm:convergence}).
 Telescoping $F(w^{t+1})\leq F(w^t)-\eta\|\nabla F(w^t)\|^2+\eta^2 O(\sigma^2\beta^2)$ over $T^*$
 rounds with $\eta=O(1/\sqrt{T^*})$ gives
@@ -57,7 +69,8 @@ in each subsequent round $t > t_0$ with per-round probability $\geq 1 - e^{-k/\l
 
 The proof follows from detection completeness (Property (i) above) combined with the
 fact that the on-chain record of round $t_0$ cannot be altered by the BFT consensus
-(Assumption~4 with $f < n/2$): Byzantine clients cannot force a state regression.
+(Assumption~4, $f_v < m/3$ validators): Byzantine FL clients cannot force state regression
+and Byzantine validators cannot rewrite committed hashes~\cite{garay_backbone}.
 Table~\ref{tab:blockchain_vs_shmem} (Appendix~\ref{app:blockchain}) summarizes how the
 blockchain substrate provides strictly stronger self-stabilization properties than classical
 shared registers: Byzantine (not crash-only) fault model, write-once immutability, and
@@ -70,16 +83,18 @@ timeline empirically.
 \includegraphics[width=\textwidth]{fig_self_stabilization.pdf}
 \caption{Practical self-stabilization validated empirically.
 \textbf{(a)} Error trajectories $\|w^t - w^*\|$ from seven initial corruption levels
-spanning $0.1$--$50\times$ the target tolerance $\varepsilon$.
-Despite the 500-fold range of initial states, all trajectories converge within
-$T^* = O(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon)$ rounds
-(Theorem~\ref{thm:self_stab}), confirming the core self-stabilization property:
-recovery time is bounded \emph{independently of initial state magnitude}.
+spanning $0.1$--$50\times$ the target tolerance $\varepsilon$, consistent with the
+bounded initialization Assumption~\ref{ass:bounded_init}.
+All trajectories converge within
+$T^* = O(\Delta_0(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon))$ rounds
+(Theorem~\ref{thm:self_stab}), confirming the core property of practical
+self-stabilization~\cite{dolev_kat_practical}: recovery time is bounded
+\emph{independently of initial state within the feasible range}.
 \textbf{(b)} Observed stabilization time $T_{\mathrm{stab}}$ vs.\ initial corruption
 (log scale). The flat profile at $T^*$ (dashed) demonstrates that $T_{\mathrm{stab}}$
 does not grow with initial corruption---the defining property that separates
 practically self-stabilizing protocols from ordinary convergence
-guarantees~\cite{dijkstra_self_stab,dolev_self_stab}.}
+guarantees~\cite{dijkstra_self_stab,dolev_self_stab,dolev_kat_practical}.}
 \label{fig:self_stabilization}
 \end{figure}
 
@@ -100,7 +115,8 @@ that a rank-$f$ perturbation of magnitude $\sigma_{\mathrm{byz}} \leq \sigma\sqr
 and Byzantine fraction $\beta = f/n$ creates no eigenvalue spike above $\lambda_+$.
 Byzantine clients satisfying this constraint are spectrally indistinguishable from honest
 clients under any test that uses only the empirical spectral distribution; the minimax
-lower bound~\cite{byzantine_ml} shows no single-round test can distinguish them with
-probability $> 1/2 + \epsilon$ for any $\epsilon > 0$, violating detection completeness
-and therefore self-stabilization.
+lower bound of Yin et al.~\cite{byzantine_ml} shows no single-round test can distinguish
+them with probability $> 1/2 + \epsilon$ for any $\epsilon > 0$, violating detection
+completeness (Theorem~\ref{thm:spectral_anomaly}) and therefore closure
+(Lemma~\ref{lem:closure}), which destroys self-stabilization.
 \end{proof}

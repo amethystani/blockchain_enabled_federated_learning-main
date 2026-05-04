@@ -2,7 +2,9 @@
 
 Federated Learning (FL) is a distributed computing paradigm where $n$ processes collaboratively minimize a global objective $F(w)$ without exchanging raw data. The decentralized nature of FL aligns with blockchain technology, enabling trustless aggregation through immutable distributed ledgers. A fundamental challenge arises when $f < n/2$ processes are \emph{Byzantine}~\cite{byzantine_generals}: they may submit arbitrary gradient updates, corrupting the global model.
 
-We study this as a \emph{self-stabilization} problem in the sense of Dijkstra~\cite{dijkstra_self_stab}: can the system recover from an \emph{arbitrary} initial model state---including complete adversarial corruption---and maintain a \emph{legitimate configuration} (all Byzantine nodes identified, honest gradient correctly aggregated) indefinitely? Prior Byzantine-robust FL methods guarantee convergence from a \emph{known-good} initialization but offer no recovery from catastrophic corruption; they are robust but \emph{not} self-stabilizing.
+We study this as a \emph{practical self-stabilization} problem in the sense of Dijkstra~\cite{dijkstra_self_stab} and Dolev, Kat, and Meirovitch~\cite{dolev_kat_practical}: can the system recover from an adversarially corrupted initial model state and maintain a \emph{legitimate configuration} (all Byzantine nodes identified, honest gradient correctly aggregated) indefinitely?
+Consider a concrete failure: a long-running medical FL system that trains for months; 40\% of hospitals become compromised by round 50; the global model has been degraded for dozens of rounds with no external reset available. Can the system autonomously recover without human intervention?
+Prior Byzantine-robust FL methods guarantee convergence from a \emph{known-good} initialization but offer no such recovery guarantee; they are robust but \emph{not} self-stabilizing in the Arora-Gouda closure-and-convergence sense~\cite{arora_gouda}.
 
 The self-stabilizing Byzantine robust aggregation problem requires: given $n$ processes where $f < n/2$ are Byzantine, and honest process $i$ submits $g_i \in \mathbb{R}^d$, compute $\hat{g}$ satisfying:
 \begin{equation}
@@ -20,10 +22,13 @@ The contributions of this work are fivefold:
 
 \textbf{1. Practical Self-Stabilization (distributed systems):} We provide a formal
 recovery argument showing our protocol is \emph{practically self-stabilizing} in the
-tradition of Dijkstra~\cite{dijkstra_self_stab}: from any initial state, the protocol
-reaches a legitimate configuration within $T^* = O(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon)$
-rounds ($\beta = f/n$), with closure, under Assumptions~1--4 (Section~\ref{sec:self_stabilization}).
-We also establish an impossibility at $\sigma^2\beta^2 \geq 0.25$
+closure-and-convergence tradition~\cite{arora_gouda,dolev_kat_practical}: from any
+bounded initialization ($F(w^0)-F^*\leq\Delta_0$, Assumption~6), the protocol
+reaches a legitimate configuration within
+$T^* = O(\Delta_0(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon))$
+rounds ($\beta = f/n$), with closure, under Assumptions~1--5
+(Section~\ref{sec:self_stabilization}).
+We also establish an information-theoretic impossibility at $\sigma^2\beta^2 \geq 0.25$
 (Theorem~\ref{thm:phase_impossibility}).
 
 \textbf{2. Blockchain as Stabilizing Shared Memory:} We formalize the blockchain as a
@@ -39,11 +44,11 @@ a convergence rate $O(\sigma\beta/\sqrt{T} + \beta^2/T)$ with a matching lower b
 $\Omega(\sigma\beta/\sqrt{T})$ (Sections~\ref{sec:theory}--\ref{sec:convergence}).
 
 \textbf{4. Scalable Spectral Algorithm:} We combine KS testing against the MP distribution
-with layer-wise Frequent Directions sketching~\cite{frequent_directions}, reducing memory
-from $O(d^2)$ to $O(k^2)$ and enabling deployment on 345M-parameter models
+with layer-wise Frequent Directions sketching~\cite{frequent_directions,ghashami_fd},
+reducing memory from $O(d^2)$ to $O(k^2)$ and enabling deployment on 345M-parameter models
 (Section~\ref{sec:algorithm}).
 
 \textbf{5. Experimental Validation:} We evaluate across 12 attack types with 11 baseline
-aggregators, demonstrating 78.4\% mean accuracy at 40\% Byzantine fraction versus 48--63\%
+aggregators, demonstrating 78.4\% mean accuracy at 40\% Byzantine fraction versus 48--64\%
 for baselines, with Byzantine detection rates exceeding 96\% below the phase transition
 boundary (Section~\ref{sec:experiments}).
