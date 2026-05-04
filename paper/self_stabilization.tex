@@ -9,22 +9,21 @@ in the closure-and-convergence framework of Arora and Gouda~\cite{arora_gouda}.
 \begin{definition}[Legitimate Configuration]
 \label{def:legit}
 A configuration $(w^t, \mathcal{H}^t)$ at round $t$ is \emph{legitimate} iff:
-(i) all Byzantine clients are correctly excluded: $\mathcal{H}^t = \mathcal{P} \setminus \mathcal{B}$;
-(ii) the aggregated gradient approximates the honest mean: $\|\hat{g}^t - \bar{g}^t\|^2 \leq \varepsilon_{\mathrm{agg}} := C\sigma^2\beta^2$ for a universal constant $C > 0$;
+(i) Byzantine clients are excluded with high probability:
+$\Pr[\mathcal{H}^t \neq \mathcal{P} \setminus \mathcal{B}] \leq e^{-k/\log^2 k}$;
+(ii) the aggregated gradient approximates the honest mean:
+$\|\hat{g}^t - \bar{g}^t\|^2 \leq \varepsilon_{\mathrm{agg}} := C\sigma^2\beta^2$
+for a universal constant $C > 0$;
 (iii) round $t$ is finalized on-chain with the correct model hash.
 \end{definition}
 
 \begin{remark}[Classical vs.\ Practical Self-Stabilization]
 Classical self-stabilization~\cite{dijkstra_self_stab} requires recovery from \emph{any}
-starting configuration with \emph{no} assumptions on initial state.
-Our protocol satisfies the \emph{practical} variant formalized by Dolev, Kat, and
-Meirovitch~\cite{dolev_kat_practical}: recovery is guaranteed under Assumptions~1--5
-plus Assumption~6 (bounded initialization, below).
-These assumptions are \emph{necessary}: Theorem~\ref{thm:phase_impossibility} shows
-self-stabilization is information-theoretically impossible at $\sigma^2\beta^2 \geq 0.25$.
-Closure is probabilistic: per-round success probability $\geq 1-e^{-k/\log^2 k}$,
-so over $T$ rounds the failure probability is at most $Te^{-k/\log^2 k} < 10^{-28}$
-for $k=256$, $T=1{,}000$ (negligible in practice).
+starting configuration with no assumptions. Our protocol satisfies the \emph{practical}
+variant~\cite{dolev_kat_practical} under Assumptions~1--5 plus Assumption~6 below.
+Assumptions are \emph{necessary}: Theorem~\ref{thm:phase_impossibility} shows
+impossibility at $\sigma^2\beta^2 \geq 0.25$. Closure is probabilistic with failure
+probability $\leq Te^{-k/\log^2 k} < 10^{-28}$ for $k{=}256$, $T{=}1000$.
 \end{remark}
 
 \begin{assumption}[Bounded Initialization]
@@ -42,23 +41,22 @@ Let $\beta = f/n$.
 Under Assumptions~1--5 and Assumption~\ref{ass:bounded_init} ($F(w^0)-F^* \leq \Delta_0$),
 the protocol reaches a legitimate configuration (Definition~\ref{def:legit}) within
 $T^* = O\!\left(\Delta_0(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon)\right)$ rounds
-and maintains it thereafter (\emph{closure}) with high probability.
+and maintains it thereafter (\emph{closure}) with probability
+$\geq 1 - T e^{-k/\log^2 k}$.
 \end{theorem}
 
 \begin{proof}[Proof sketch]
-\emph{Legitimate configuration (round 1):}
-By Theorem~\ref{thm:spectral_anomaly} and Assumption~3, Byzantine gradients are detected
-with probability $\geq 1-e^{-k/\log^2 k}$ per round, so conditions (i)--(iii) of
-Definition~\ref{def:legit} hold from the first round onward.
-The blockchain's write-once immutability (Assumption~4) ensures no state regression.
+\emph{Legitimate configuration:}
+By Theorem~\ref{thm:spectral_anomaly} and Assumption~3, Byzantine clients are excluded
+with per-round probability $\geq 1-e^{-k/\log^2 k}$, so condition (i) holds; (ii)
+follows by $\mathbb{E}[\|\hat{g}^t-\bar{g}^t\|^2]\leq C\sigma^2\beta^2$
+(Theorem~\ref{thm:convergence}); (iii) by the blockchain commit.
+Blockchain write-once immutability (Assumption~4) prevents state regression.
 
-\emph{Convergence to $\varepsilon$-stationarity (in $T^*$ rounds):}
-By Assumption~\ref{ass:bounded_init}, $F(w^0)-F^*\leq\Delta_0$.
-The filtered aggregate satisfies $\mathbb{E}[\|\hat{g}^t-\bar{g}^t\|^2]\leq O(\sigma^2\beta^2)$
-(Theorem~\ref{thm:convergence}).
-Telescoping $F(w^{t+1})\leq F(w^t)-\eta\|\nabla F(w^t)\|^2+\eta^2 O(\sigma^2\beta^2)$ over $T^*$
-rounds with $\eta=O(1/\sqrt{T^*})$ gives
-$\min_t\mathbb{E}[\|\nabla F(w^t)\|^2]\leq\varepsilon$.
+\emph{Convergence and closure:}
+$F(w^0)-F^*\leq\Delta_0$ (Assumption~\ref{ass:bounded_init}); telescoping the SGD descent
+with $\eta=O(1/\sqrt{T^*})$ gives $\min_t\mathbb{E}[\|\nabla F(w^t)\|^2]\leq\varepsilon$.
+By union bound over $T$ rounds, the failure probability is $\leq Te^{-k/\log^2 k}$.
 \end{proof}
 
 \begin{lemma}[Closure via Blockchain Immutability]
@@ -67,56 +65,49 @@ Once the protocol enters a legitimate configuration at round $t_0$, it remains l
 in each subsequent round $t > t_0$ with per-round probability $\geq 1 - e^{-k/\log^2 k}$.
 \end{lemma}
 
-The proof follows from detection completeness (Property (i) above) combined with the
-fact that the on-chain record of round $t_0$ cannot be altered by the BFT consensus
-(Assumption~4, $f_v < m/3$ validators): Byzantine FL clients cannot force state regression
-and Byzantine validators cannot rewrite committed hashes~\cite{garay_backbone}.
-Table~\ref{tab:blockchain_vs_shmem} (Appendix~\ref{app:blockchain}) summarizes how the
-blockchain substrate provides strictly stronger self-stabilization properties than classical
-shared registers: Byzantine (not crash-only) fault model, write-once immutability, and
-automatic BFT self-healing.
+The proof follows from detection completeness combined with the fact that the on-chain
+record of round $t_0$ cannot be altered by the BFT consensus (Assumption~4,
+$f_v < m/3$ validators): Byzantine FL clients cannot force state regression and
+Byzantine validators cannot rewrite committed hashes~\cite{garay_backbone}.
+Table~\ref{tab:blockchain_vs_shmem} (Appendix~\ref{app:blockchain}) formalizes how
+blockchain provides strictly stronger properties than classical shared registers.
 Figure~\ref{fig:blockchain_stabilizer} (Appendix~\ref{app:experiments}) shows the closure
 timeline empirically.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth]{fig_self_stabilization.pdf}
-\caption{Practical self-stabilization validated empirically.
-\textbf{(a)} Error trajectories $\|w^t - w^*\|$ from seven initial corruption levels
-spanning $0.1$--$50\times$ the target tolerance $\varepsilon$, consistent with the
-bounded initialization Assumption~\ref{ass:bounded_init}.
-All trajectories converge within
-$T^* = O(\Delta_0(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon))$ rounds
-(Theorem~\ref{thm:self_stab}), confirming the core property of practical
-self-stabilization~\cite{dolev_kat_practical}: recovery time is bounded
-\emph{independently of initial state within the feasible range}.
-\textbf{(b)} Observed stabilization time $T_{\mathrm{stab}}$ vs.\ initial corruption
-(log scale). The flat profile at $T^*$ (dashed) demonstrates that $T_{\mathrm{stab}}$
-does not grow with initial corruption---the defining property that separates
-practically self-stabilizing protocols from ordinary convergence
-guarantees~\cite{dijkstra_self_stab,dolev_self_stab,dolev_kat_practical}.}
+\includegraphics[width=0.96\textwidth,height=0.22\textheight,keepaspectratio]{fig_self_stabilization.pdf}
+\caption{Practical self-stabilization validated empirically ($w^*$ known in this
+controlled setting; $\|w^t-w^*\|$ is used as a proxy for $\|\nabla F(w^t)\|$).
+\textbf{(a)} Seven initial corruption levels spanning $0.1$--$50\times\,\varepsilon$
+(consistent with Assumption~\ref{ass:bounded_init}) all converge within $T^*$ rounds
+(Theorem~\ref{thm:self_stab}): recovery time is bounded \emph{independently of initial
+state within the feasible range}~\cite{dolev_kat_practical}.
+\textbf{(b)} Flat $T_{\mathrm{stab}}$ profile (dashed = $T^*$): stabilization time
+does not grow with corruption---the defining property separating practically
+self-stabilizing from ordinary convergence guarantees~\cite{dijkstra_self_stab,dolev_self_stab}.}
 \label{fig:self_stabilization}
 \end{figure}
 
-\subsection{Phase Transition as Impossibility Boundary}
-
-\begin{theorem}[Self-Stabilization Impossibility]
+\begin{theorem}[Self-Stabilization Impossibility at $\sigma^2\beta^2\geq 0.25$]
 \label{thm:phase_impossibility}
 Let $\beta = f/n$.
-For $\sigma^2\beta^2 \geq 0.25$, no Byzantine-resilient FL protocol using only gradient
-information can be self-stabilizing: Byzantine clients can construct gradients with the
-same Marchenko-Pastur spectral distribution as honest heterogeneous gradients, making
-statistical identification information-theoretically impossible.
+For $\sigma^2\beta^2 \geq 0.25$, no Byzantine-resilient FL protocol whose detection
+test is a function of the empirical spectral distribution of client gradients can be
+self-stabilizing: Byzantine clients can construct gradients indistinguishable from
+honest heterogeneous gradients under the Marchenko-Pastur law, making detection
+information-theoretically impossible.
 \end{theorem}
 
 \begin{proof}[Proof sketch]
 When $\sigma^2\beta^2 \geq 0.25$, the BBP phase transition~\cite{bbp_transition} guarantees
-that a rank-$f$ perturbation of magnitude $\sigma_{\mathrm{byz}} \leq \sigma\sqrt{d/n}$
-and Byzantine fraction $\beta = f/n$ creates no eigenvalue spike above $\lambda_+$.
-Byzantine clients satisfying this constraint are spectrally indistinguishable from honest
-clients under any test that uses only the empirical spectral distribution; the minimax
-lower bound of Yin et al.~\cite{byzantine_ml} shows no single-round test can distinguish
-them with probability $> 1/2 + \epsilon$ for any $\epsilon > 0$, violating detection
-completeness (Theorem~\ref{thm:spectral_anomaly}) and therefore closure
-(Lemma~\ref{lem:closure}), which destroys self-stabilization.
+that a rank-$f$ perturbation of per-client magnitude $\tau \leq \sigma/\sqrt{\beta}$
+(satisfying $\tau^2\beta \leq \sigma^2$, the no-spike threshold) creates no eigenvalue
+spike above $\lambda_+$.
+A Byzantine client $b$ whose gradient satisfies $\|g_b - \bar{g}\| \leq \sigma/\sqrt{\beta}$
+is spectrally indistinguishable from honest clients; the minimax lower
+bound of Yin et al.~\cite{byzantine_ml} (covering all unbiased gradient-information
+estimators including coordinate-wise tests) shows no test can distinguish attack from
+benign with probability $> 1/2+\epsilon$, violating Definition~\ref{def:legit}(i) and
+Lemma~\ref{lem:closure}, destroying self-stabilization.
 \end{proof}
