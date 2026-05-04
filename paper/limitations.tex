@@ -2,16 +2,14 @@
 \section{Limitations}
 \label{sec:limitations}
 
-\textbf{Coordinator trust.}
-The coordinator is assumed non-Byzantine; fully decentralized spectral aggregation
-without a trusted coordinator remains open.
-
-\textbf{Phase transition.}
-Detection fails at $\sigma^2\beta^2 \geq 0.25$; DP or trusted validation sets
-(Appendix~\ref{app:game_theory}) can extend the feasible regime.
-
-\textbf{Robustness boundaries.}
-$O(1/\sqrt{k})$ sketch error~\cite{ghashami_fd} may mask spikes near $\lambda_+$; low-rank
-coordinated attacks reduce detection to 73.2\% (cross-layer mitigates); heavy-tailed
-gradients~\cite{rmt_modern}, dynamic Byzantine client sets~\cite{bft_consensus}, full
-asynchrony, and DP integration preserving the phase-transition condition remain open.
+\begin{description}
+\item[\textbf{Coordinator trust.}] The coordinator is assumed non-Byzantine; fully
+  decentralized spectral aggregation without a trusted coordinator remains open.
+\item[\textbf{Phase transition.}] Detection fails at $\sigma^2\beta^2 \geq 0.25$; DP or
+  trusted validation sets (Appendix~\ref{app:game_theory}) can extend the feasible regime.
+\item[\textbf{Robustness boundaries.}] $O(1/\sqrt{k})$ sketch error~\cite{ghashami_fd}
+  may mask spikes near $\lambda_+$; low-rank coordinated attacks reduce detection to 73.2\%
+  (cross-layer mitigates); heavy-tailed gradients~\cite{rmt_modern}, dynamic Byzantine
+  client sets~\cite{bft_consensus}, full asynchrony, and DP integration preserving the
+  phase-transition condition remain open.
+\end{description}

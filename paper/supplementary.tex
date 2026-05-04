@@ -25,17 +25,6 @@ Self-healing & Manual & Automatic (BFT) \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\textwidth]{fig_architecture.pdf}
-\caption{Full system architecture pipeline: (1) Frequent Directions sketching compresses
-client gradients; (2) eigendecomposition of the Gram matrix; (3) KS test against the
-MP distribution; (4) Byzantine-filtered aggregation; (5) BFT on-chain checkpoint.
-The blockchain's write-once immutability provides the self-stabilizing shared memory
-substrate (Section~7).}
-\label{fig:pipeline}
-\end{figure}
-
 \subsection{Contract Functions}
 
 The Solidity 0.8.20 smart contract deployed on Polygon networks manages the federated

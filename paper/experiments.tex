@@ -70,11 +70,12 @@ explaining the consistently high detection rate.}
 
 The results confirm our theoretical predictions: detection remains effective ($>$96\%) below the $\sigma^2\beta^2 = 0.25$ phase transition (Theorem~\ref{thm:phase_impossibility}).
 
+\vspace{-4pt}
 \subsection{Accuracy Comparison}
 
-We compare our approach against 11 baseline methods across 12 attack types on the medium-scale setup (144 total experiments: 12 attacks $\times$ 12 aggregators including ours). Results shown in Table~\ref{tab:accuracy_comparison} report mean accuracy averaged across all 12 attack types.
+We compare our approach against 11 baseline methods across 12 attack types (144 total experiments: 12 attacks $\times$ 12 aggregators). Table~\ref{tab:accuracy_comparison} reports mean accuracy across all 12 attack types.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
 \caption{Mean accuracy across 12 attack types ($\beta = f/n = 40\%$ Byzantine fraction).
 At this extreme load, trust-bootstrapping and pairwise-distance defenses cluster
@@ -126,8 +127,8 @@ distance-based baselines plateau by round~70--80 while our protocol continues to
     grid style={dashed, gray!20},
     width=0.88\textwidth,
     height=0.28\textwidth,
-    legend pos=south east,
-    legend style={font=\scriptsize, draw=black!50, fill=white, fill opacity=0.95, text opacity=1, at={(0.99,0.06)}, anchor=south east},
+    legend style={font=\scriptsize, draw=black!50, fill=white, fill opacity=0.97, text opacity=1,
+      at={(0.5,1.01)}, anchor=south, legend columns=5, column sep=3pt},
     tick label style={font=\small},
     xlabel style={font=\normalsize},
     ylabel style={font=\normalsize},
