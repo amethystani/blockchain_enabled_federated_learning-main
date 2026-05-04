@@ -88,24 +88,10 @@ KS testing against the fitted MP distribution detects these outliers with the st
 probability by sub-Gaussian concentration of the empirical spectral distribution.
 \end{proof}
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\textwidth]{fig_mp_detection.pdf}
-\caption{Spectral detection mechanism.
-\textbf{(a)} Eigenvalue histograms for honest-only gradients (blue, confined within MP
-bulk) vs.\ a Byzantine attack (red, with outlier spikes above $\lambda_+$, dashed).
-The Marchenko-Pastur upper edge $\lambda_+ = \hat{\sigma}^2(1+\sqrt{\hat{\gamma}})^2$
-(orange) cleanly separates Byzantine outliers from the honest bulk.
-\textbf{(b)} Empirical detection rate (orange dots) and theoretical bound (blue curve)
-as a function of the heterogeneity metric $\sigma^2\beta^2$.
-Below the phase transition ($\sigma^2\beta^2 < 0.25$, green region), detection
-exceeds 96\%; beyond it (red region), Byzantine gradients become spectrally
-indistinguishable from honest heterogeneity---a fundamental impossibility
-(Theorem~\ref{thm:phase_impossibility}).}
-\label{fig:mp_detection}
-\end{figure}
-
 \subsection{Phase Transition Characterization}
+
+Figure~\ref{fig:mp_detection} (Appendix~\ref{app:experiments}) visualizes the eigenvalue
+separation and empirical detection rate as a function of $\sigma^2\beta^2$.
 
 \begin{theorem}[Detection Phase Transition]
 \label{thm:phase_transition_det}
