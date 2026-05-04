@@ -194,4 +194,4 @@ Full-covariance computation becomes impractical above $10^6$ parameters ($>$4\,G
 while sketch $k{=}512$ fits within 16\,GB GPU memory up to $10^9$ parameters.
 For GPT-2-Medium (345M parameters), layer-wise sketching uses 890\,MB versus 28\,GB
 ($31{\times}$ reduction), enabling deployment on a single A100.
-Detailed memory-vs.-parameter curves across four sketch sizes are in Appendix~\ref{app:experiments}.
+Detailed memory-vs.-parameter curves across four sketch sizes, sketch-size ablation, layer-wise vs.\ full-model detection tradeoffs, and threshold adaptation results are in Appendix~\ref{app:experiments} and~\ref{app:ablation}.

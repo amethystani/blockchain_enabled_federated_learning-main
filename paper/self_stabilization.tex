@@ -82,6 +82,24 @@ Self-healing & Manual & Automatic (BFT) \\
 \end{tabular}
 \end{table}
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{fig_self_stabilization.pdf}
+\caption{Practical self-stabilization validated empirically.
+\textbf{(a)} Error trajectories $\|w^t - w^*\|$ from seven initial corruption levels
+spanning $0.1$--$50\times$ the target tolerance $\varepsilon$.
+Despite the 500-fold range of initial states, all trajectories converge within
+$T^* = O(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon)$ rounds
+(Theorem~\ref{thm:self_stab}), confirming the core self-stabilization property:
+recovery time is bounded \emph{independently of initial state magnitude}.
+\textbf{(b)} Observed stabilization time $T_{\mathrm{stab}}$ vs.\ initial corruption
+(log scale). The flat profile at $T^*$ (dashed) demonstrates that $T_{\mathrm{stab}}$
+does not grow with initial corruption---the defining property that separates
+practically self-stabilizing protocols from ordinary convergence
+guarantees~\cite{dijkstra_self_stab,dolev_self_stab}.}
+\label{fig:self_stabilization}
+\end{figure}
+
 \subsection{Phase Transition as Impossibility Boundary}
 
 \begin{theorem}[Self-Stabilization Impossibility]
