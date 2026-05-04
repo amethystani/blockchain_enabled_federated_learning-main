@@ -39,8 +39,10 @@ A detailed pipeline diagram is in Appendix~\ref{app:blockchain}.}
 \label{sec:threat_model}
 
 \noindent\textbf{Assumption~1 (Byzantine Fault Model).}
-At most $f < n/2$ processes are Byzantine: they may send any $g_i^t \in \mathbb{R}^d$,
+At most $f < n/2$ \emph{client} processes are Byzantine: they may send any $g_i^t \in \mathbb{R}^d$,
 collude, and know the aggregation algorithm, but cannot break cryptographic primitives.
+\emph{The coordinator is assumed non-Byzantine (scope limitation; see Section~\ref{sec:limitations}).}
+The validator fault budget $f_v < m/3$ (Assumption~4) is separate from the client budget.
 
 \noindent\textbf{Assumption~2 (Honest Gradient Variance).}
 Each honest client $i \in \mathcal{H}$ computes $g_i^t = \nabla F_i(w^t) + \xi_i^t$
@@ -74,6 +76,8 @@ both targeted and untargeted attacks (full 12-attack evaluation in Section~\ref{
 \noindent\textbf{Liveness.} $\min_{t \in [T]}\mathbb{E}[\|\nabla F(w^t)\|^2] \leq O(\sigma\beta/\sqrt{T} + \beta^2/T)$
 provided $f < n/2$ and $\sigma^2\beta^2 < 0.25$.
 
-\noindent\textbf{Practical Stabilization.} Starting from any $w^0 \in \mathbb{R}^d$, the protocol reaches
-a legitimate configuration (Definition~\ref{def:legit}) within
-$T^* = O(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon)$ rounds (Theorem~\ref{thm:self_stab}).
+\noindent\textbf{Practical Stabilization.} Under Assumptions~1--5 and bounded initialization
+(Assumption~\ref{ass:bounded_init}), the protocol reaches a legitimate configuration
+(Definition~\ref{def:legit}) within
+$T^* = O(\Delta_0(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon))$ rounds
+(Theorem~\ref{thm:self_stab}).
