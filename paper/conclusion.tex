@@ -1,19 +1,16 @@
+\vspace{-4pt}
 \section{Conclusion}
 \label{sec:conclusion}
 
-We presented the first Byzantine-robust federated learning protocol with formal
-practical self-stabilization guarantees~\cite{arora_gouda,dolev_kat_practical}.
-Under Assumptions~1--5 and bounded initialization ($F(w^0)-F^*\leq\Delta_0$), the
-protocol autonomously recovers to a legitimate configuration within
-$T^* = O(\Delta_0(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon))$ rounds, achieving
-$O(\sigma\beta/\sqrt{T} + \beta^2/T)$ convergence via a four-stage pipeline: Frequent
-Directions sketching, Marchenko-Pastur spectral filtering, Byzantine-excluded aggregation,
-and BFT on-chain checkpointing.
-The BBP phase transition at $\sigma^2\beta^2 = 0.25$ yields a matching detection
-impossibility~\cite{bbp_transition,byzantine_ml}, and empirical results across 12 attack
-types show 78.4\% accuracy at 40\% Byzantine fraction---15 points above FLTrust~\cite{crfl}.
-
-Open problems: fully decentralized spectral aggregation (no trusted coordinator),
-asynchronous self-stabilization with bounded delay, tight Non-IID finite-sample
-concentration bounds, DP integration preserving the phase-transition condition, and
-blockchain overhead reduction at scale (Appendix~\ref{app:game_theory}).
+We presented the first Byzantine-robust federated learning protocol with formal practical
+self-stabilization guarantees~\cite{arora_gouda,dolev_kat_practical}: from any bounded
+initialization ($F(w^0)-F^*\leq\Delta_0$, Assumption~6), the protocol reaches a
+legitimate configuration within $T^* = O(\Delta_0(\sigma^2\beta^2/\varepsilon^2 + \beta^2/\varepsilon))$
+rounds and converges at $O(\sigma\beta/\sqrt{T} + \beta^2/T)$, with the BBP phase
+transition at $\sigma^2\beta^2=0.25$ providing a matching detection impossibility
+\cite{bbp_transition,byzantine_ml}.
+Empirical evaluation across 12 attack types achieves 78.4\% accuracy at 40\% Byzantine
+fraction---15 points above FLTrust~\cite{crfl}.
+Open problems: fully decentralized spectral aggregation, asynchronous self-stabilization,
+DP integration preserving the phase-transition condition, and tight Non-IID concentration
+bounds (Appendix~\ref{app:game_theory}).

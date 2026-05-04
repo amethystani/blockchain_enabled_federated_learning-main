@@ -11,24 +11,24 @@ Algorithm~\ref{alg:spectral_sentinel} presents the per-round aggregation protoco
 \begin{algorithmic}[1]
 \Require Sketches $\{S_i^t\}_{i \in [n]}$, sketch size $k$, thresholds $\tau_{\text{KS}}, \tau_{\text{tail}}$
 \Ensure Aggregated gradient $\hat{g}^t$, trusted set $\mathcal{T}_t$
-\State Form gradient matrix $G \gets [g_1^T;\ldots;g_n^T]$ \textbf{or} reconstruct from sketches
-\State Apply Frequent Directions~\cite{frequent_directions,count_sketch}: $\tilde{G} \gets \mathrm{Sketch}(G, k)$
+\State Each client $i$ sends sketch $S_i \in \mathbb{R}^{k \times d}$ (Frequent Directions~\cite{frequent_directions,ghashami_fd})
+\State Aggregate sketches: $\tilde{G} \gets \mathrm{Sketch}([S_1;\ldots;S_n], k)$ via streaming SVD
 \State Compute covariance: $C \gets \frac{1}{n}\tilde{G}^T\tilde{G}$
 \State Compute sorted eigenvalues: $\lambda_1 \geq \cdots \geq \lambda_k \gets \mathrm{eigvals}(C)$
 \State Fit MP parameters: $(\hat{\gamma}, \hat{\sigma}^2) \gets \mathrm{FitMP}(\lambda, k, d)$\quad \{$\hat{\gamma} = d/k$\}
 \State $D_{\text{KS}} \gets \mathrm{KStest}(\lambda, \mathrm{MP}(\hat{\gamma}, \hat{\sigma}^2))$
 \State $\mathcal{A} \gets \{i : \lambda_i > \hat{\sigma}^2(1+\sqrt{\hat{\gamma}})^2 + \tau_{\text{tail}}\cdot\hat{\sigma}^2\}$
 \If{$D_{\text{KS}} > \tau_{\text{KS}}$ \textbf{or} $|\mathcal{A}| > 0$}
-  \State $\mathcal{B} \gets \mathrm{IdentifyByzantine}(G, \lambda, \mathcal{A})$;\quad $\mathcal{T}_t \gets [n]\setminus\mathcal{B}$
+  \State $\mathcal{B} \gets \mathrm{IdentifyByzantine}(\{S_i\}, \lambda, \mathcal{A})$;\quad $\mathcal{T}_t \gets [n]\setminus\mathcal{B}$
 \Else
   \State $\mathcal{T}_t \gets [n]$
 \EndIf
-\State $\hat{g}^t \gets \frac{1}{|\mathcal{T}_t|}\sum_{i \in \mathcal{T}_t} g_i^t$;\quad commit $H(\hat{g}^t \| t)$ on-chain
+\State $\hat{g}^t \gets \frac{1}{|\mathcal{T}_t|}\sum_{i \in \mathcal{T}_t} \mathrm{Reconstruct}(S_i)$;\quad commit $H(\hat{g}^t \| t)$ on-chain
 \State \Return $\hat{g}^t, \mathcal{T}_t$
 \end{algorithmic}
 \end{algorithm}
 
-\noindent\textit{Note:} $\mathrm{IdentifyByzantine}$ projects each gradient onto anomalous eigenvectors ($U_{\mathcal{A}}$) and flags clients exceeding a MAD-based threshold on projection scores (details in Appendix~\ref{app:blockchain}).
+\noindent\textit{Note:} $\mathrm{IdentifyByzantine}$ projects each client's \emph{sketch row} $S_i$ onto the anomalous eigenvectors $U_{\mathcal{A}}$ and flags clients exceeding a MAD-based threshold on the resulting projection score; $\mathrm{Reconstruct}(S_i)$ returns the mean gradient $\bar{g}_i$ implied by the sketch. False positive rate of the MAD threshold is calibrated to $\leq 2.3\%$ empirically (Table~2). Full details in Appendix~\ref{app:blockchain}.
 
 \subsection{Sketching via Frequent Directions}
 

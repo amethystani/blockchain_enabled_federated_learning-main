@@ -2,21 +2,15 @@
 \label{sec:limitations}
 
 \textbf{Coordinator trust.}
-The coordinator is assumed non-Byzantine; a fully decentralized spectral aggregation
+The coordinator is assumed non-Byzantine; fully decentralized spectral aggregation
 without a trusted coordinator remains open.
 
 \textbf{Phase transition.}
 Detection fails at $\sigma^2\beta^2 \geq 0.25$; DP or trusted validation sets
 (Appendix~\ref{app:game_theory}) can extend the feasible regime.
 
-\textbf{Sketching.}
-$O(1/\sqrt{k})$ eigenvalue error~\cite{ghashami_fd} requires $k \geq 256$; very small
-spikes near $\lambda_+$ may cause false negatives.
-
-\textbf{Attack variants.}
-Block-targeted low-rank attacks reduce detection to 73.2\% (cross-layer mitigates);
-heavy-tailed gradient distributions may weaken the MP universality argument~\cite{rmt_modern}.
-
-\textbf{Dynamic membership, asynchrony, and privacy.}
-Extending to dynamic Byzantine client sets~\cite{bft_consensus}, full asynchrony, and
-formal differential privacy while preserving the phase-transition condition remain open.
+\textbf{Robustness boundaries.}
+$O(1/\sqrt{k})$ sketch error~\cite{ghashami_fd} may mask spikes near $\lambda_+$; low-rank
+coordinated attacks reduce detection to 73.2\% (cross-layer mitigates); heavy-tailed
+gradients~\cite{rmt_modern}, dynamic Byzantine client sets~\cite{bft_consensus}, full
+asynchrony, and DP integration preserving the phase-transition condition remain open.
